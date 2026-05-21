@@ -1,25 +1,10 @@
 <!--
 ==================================================================
-  EL CEREBRO DE LLAMADAS · Manual de instalación
-  by AUTOSETTER™  ·  v1.0  ·  Single-file static site
-
-  BRIEF DE SENSACIÓN
-  ------------------
-  - 3s: el visitante aterriza en una terminal desclasificada.
-    Negro profundo, un único pulso naranja-rojo eléctrico respirando.
-    Sensación de operación encubierta + control absoluto.
-  - Metáfora: panel de control de laboratorio (hermano del LAB).
-    Cada paso es un "node" que se activa. No es un blog, es un protocolo.
-  - Objeto protagonista: núcleo de puntos en grilla cerebral que
-    respira. Único elemento visual recurrente.
-
-  REGLAS · branding alineado con autosetter-lab.pages.dev
-  ------
-  - 3 fuentes: Geist (display) + JetBrains Mono (técnica) + Caveat (script).
-  - 3 colores: #050505 (bg) · #FE2E00 (acento) · #F5F2EC (texto).
-  - Mínimo 12vh entre secciones. Aire.
-  - Animaciones: Intersection Observer + cubic-bezier(.16,1,.3,1).
-  - Nada bouncea. Todo se desliza.
+  EL CEREBRO DE LLAMADAS · Showcase del sistema (para vídeo)
+  by AUTOSETTER™
+  - Horizontal scroll pinned para revelar los 8 pasos lateralmente
+  - Branding alineado con autosetter-lab.pages.dev
+  - Pensado para grabar pantalla en YouTube
 ==================================================================
 -->
 <!doctype html>
@@ -28,11 +13,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#050505">
-  <meta name="description" content="El sistema que escucha tus llamadas y te entrega un análisis ejecutivo automático. Manual de instalación en 90 minutos.">
-  <meta property="og:title" content="El Cerebro de Llamadas · AUTOSETTER™">
-  <meta property="og:description" content="Tus llamadas, analizadas por Claude, archivadas en Drive, notificadas en Telegram. Automático. 90 minutos.">
-  <meta property="og:type" content="website">
-  <title>El Cerebro de Llamadas · AUTOSETTER™</title>
+  <title>Cerebro de Llamadas · AUTOSETTER™</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -44,18 +25,18 @@
     :root {
       --bg: #050505;
       --fg: #F5F2EC;
+      --soft: #C9C5BD;
+      --dim: #6E6A62;
       --accent: #FE2E00;
       --accent-soft: rgba(254,46,0,.10);
       --accent-glow: rgba(254,46,0,.45);
-      --dim: #6E6A62;
-      --soft: #C9C5BD;
       --line: rgba(255,255,255,.08);
+      --line-strong: rgba(255,255,255,.16);
       --easing: cubic-bezier(.16, 1, .3, 1);
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-
+    html { scroll-behavior: auto; }
     body {
       background: var(--bg);
       color: var(--fg);
@@ -65,44 +46,13 @@
       letter-spacing: -0.01em;
       overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
     }
 
-    /* === LAYOUT === */
-    .container {
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 0 6vw;
-    }
-
-    section {
-      padding: 14vh 0;
-      position: relative;
-    }
-
-    /* === TYPOGRAPHY === */
-    h1, h2, h3 {
-      font-weight: 700;
-      letter-spacing: -0.04em;
-      line-height: 0.95;
-    }
-
-    .mono {
-      font-family: 'JetBrains Mono', monospace;
-      font-weight: 400;
-      letter-spacing: 0;
-    }
-
-    .mono-small {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--dim);
-    }
-
+    .mono { font-family: 'JetBrains Mono', monospace; letter-spacing: 0; }
+    .script { font-family: 'Caveat', cursive; font-weight: 600; }
     .accent { color: var(--accent); }
     .dim { color: var(--dim); }
+    .soft { color: var(--soft); }
 
     a {
       color: var(--accent);
@@ -111,565 +61,436 @@
       transition: border-color .4s var(--easing);
     }
     a:hover { border-bottom-color: var(--accent); }
-
     ::selection { background: var(--accent); color: var(--bg); }
 
     /* === TOPBAR === */
     .topbar {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      padding: 24px 6vw;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      z-index: 50;
+      position: fixed; top: 0; left: 0; right: 0;
+      padding: 22px 4vw;
+      display: flex; justify-content: space-between; align-items: center;
+      z-index: 100;
       backdrop-filter: blur(8px);
-      background: rgba(5,5,5,.7);
+      background: rgba(5,5,5,.65);
       border-bottom: 1px solid transparent;
       transition: border-color .6s var(--easing);
     }
     .topbar.scrolled { border-bottom-color: var(--line); }
     .topbar .brand {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 12px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
+      font-size: 12px; letter-spacing: .14em; text-transform: uppercase;
     }
     .topbar .meta {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      color: var(--dim);
-      letter-spacing: 0.08em;
+      font-size: 11px; color: var(--dim); letter-spacing: .08em;
     }
-    .topbar .meta .dot {
-      display: inline-block;
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: var(--accent);
-      margin-right: 8px;
-      vertical-align: middle;
+    .topbar .dot {
+      display: inline-block; width: 6px; height: 6px;
+      border-radius: 50%; background: var(--accent); margin-right: 8px;
       animation: pulse 2s var(--easing) infinite;
     }
     @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
+      0%,100% { opacity: 1; transform: scale(1); }
       50% { opacity: .4; transform: scale(.85); }
     }
+
+    /* === PROGRESS BAR === */
+    .progress {
+      position: fixed; top: 0; left: 0;
+      height: 2px; background: var(--accent);
+      width: 0%; z-index: 101;
+      transition: width .15s linear;
+    }
+
+    /* === BACKGROUND CORE (canvas) === */
+    .core {
+      position: fixed; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80vmin; height: 80vmin;
+      pointer-events: none; z-index: -1;
+      opacity: .35;
+      transition: opacity .8s var(--easing);
+    }
+    .core canvas { width: 100%; height: 100%; display: block; }
 
     /* === HERO === */
     .hero {
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 18vh 6vw 8vh 6vw;
       position: relative;
-      padding-top: 14vh;
     }
-    .hero-prelude {
-      margin-bottom: 4vh;
-      opacity: 0;
-      animation: fadeUp 1.2s var(--easing) .2s forwards;
+    .hero .tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; letter-spacing: .2em; color: var(--accent);
+      text-transform: uppercase; margin-bottom: 4vh;
+      opacity: 0; animation: fadeUp 1s var(--easing) .2s forwards;
     }
     .hero h1 {
-      font-size: clamp(56px, 11vw, 184px);
-      font-weight: 700;
-      margin-bottom: 6vh;
-      opacity: 0;
-      animation: fadeUp 1.2s var(--easing) .5s forwards;
+      font-size: clamp(56px, 12vw, 200px);
+      font-weight: 800; line-height: .92; letter-spacing: -.05em;
+      margin-bottom: 4vh;
+      opacity: 0; animation: fadeUp 1.1s var(--easing) .5s forwards;
     }
     .hero h1 .line { display: block; }
-    .hero-sub {
-      max-width: 620px;
-      font-size: clamp(17px, 1.6vw, 21px);
-      color: #B8B8B0;
-      line-height: 1.45;
-      margin-bottom: 8vh;
-      opacity: 0;
-      animation: fadeUp 1.2s var(--easing) .8s forwards;
-    }
-    .hero-meta {
-      display: flex;
-      gap: 40px;
-      flex-wrap: wrap;
-      opacity: 0;
-      animation: fadeUp 1.2s var(--easing) 1.1s forwards;
-    }
-    .hero-meta-item {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .hero-meta-item .label {
+    .hero .by {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--dim);
+      font-size: clamp(14px, 1.4vw, 18px); color: var(--soft);
+      margin-bottom: 6vh; letter-spacing: .08em;
+      opacity: 0; animation: fadeUp 1.1s var(--easing) .8s forwards;
     }
-    .hero-meta-item .value {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 15px;
-      color: var(--fg);
+    .hero .by b { color: var(--accent); font-weight: 500; }
+    .hero .lede {
+      font-size: clamp(18px, 1.9vw, 26px);
+      color: var(--soft); max-width: 660px; line-height: 1.4;
+      opacity: 0; animation: fadeUp 1.1s var(--easing) 1.1s forwards;
     }
-
-    .scroll-hint {
-      position: absolute;
-      bottom: 5vh;
-      left: 50%;
+    .hero .scroll-hint {
+      position: absolute; bottom: 5vh; left: 50%;
       transform: translateX(-50%);
       font-family: 'JetBrains Mono', monospace;
-      font-size: 10px;
-      color: var(--dim);
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      opacity: 0;
-      animation: fadeUp 1.2s var(--easing) 1.4s forwards;
+      font-size: 10px; color: var(--dim);
+      letter-spacing: .2em; text-transform: uppercase;
+      opacity: 0; animation: fadeUp 1s var(--easing) 1.4s forwards;
     }
-    .scroll-hint::after {
-      content: "↓";
-      display: block;
-      margin-top: 12px;
-      font-size: 14px;
-      animation: bob 2.5s var(--easing) infinite;
+    .hero .scroll-hint::after {
+      content: "↓"; display: block; margin-top: 12px;
+      font-size: 14px; animation: bob 2.5s var(--easing) infinite;
     }
     @keyframes bob {
-      0%, 100% { transform: translateY(0); opacity: .6; }
-      50% { transform: translateY(6px); opacity: 1; }
+      0%,100% { transform: translateY(0); opacity: .6; }
+      50% { transform: translateY(8px); opacity: 1; }
     }
-
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* === CORE (núcleo de puntos cerebro) === */
-    .core {
-      position: fixed;
-      top: 50%;
-      right: -20%;
-      transform: translateY(-50%);
-      width: 70vmin;
-      height: 70vmin;
-      pointer-events: none;
-      z-index: -1;
-      opacity: .85;
-      transition: right 1.2s var(--easing), opacity 1.2s var(--easing), transform 1.2s var(--easing);
+    /* === FLOW INTRO (entre el hero y el flujo pinned) === */
+    .flow-intro {
+      padding: 18vh 6vw 10vh 6vw;
+      border-top: 1px solid var(--line);
     }
-    .core canvas {
-      width: 100%;
+    .flow-intro .tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; letter-spacing: .2em; color: var(--accent);
+      text-transform: uppercase; margin-bottom: 24px;
+    }
+    .flow-intro .tag::before { content: "// "; }
+    .flow-intro h2 {
+      font-size: clamp(40px, 6vw, 90px);
+      font-weight: 700; letter-spacing: -.04em; line-height: .95;
+      max-width: 16ch; margin-bottom: 4vh;
+    }
+    .flow-intro p {
+      font-size: clamp(16px, 1.4vw, 19px);
+      color: var(--soft); max-width: 56ch; line-height: 1.55;
+    }
+    .flow-intro .meta {
+      margin-top: 5vh;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px; color: var(--dim);
+      letter-spacing: .1em; text-transform: uppercase;
+    }
+
+    /* === FLOW PINNED HORIZONTAL === */
+    .flow-section {
+      position: relative;
+    }
+    .flow-viewport {
+      position: sticky; top: 0;
+      width: 100%; height: 100vh;
+      overflow: hidden;
+    }
+    .flow-track {
+      position: absolute; top: 0; left: 0;
       height: 100%;
-      display: block;
+      display: flex; align-items: center;
+      will-change: transform;
     }
-    body.core-side .core {
-      right: -45%;
-      opacity: .35;
-      width: 60vmin;
-      height: 60vmin;
+    .flow-step {
+      flex-shrink: 0;
+      width: 100vw; height: 100vh;
+      padding: 0 8vw;
+      display: flex; align-items: center;
+      position: relative;
     }
-
-    /* === SECTION HEADERS === */
-    .section-label {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      color: var(--accent);
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      margin-bottom: 24px;
-    }
-    .section-label::before {
-      content: "// ";
-    }
-    h2.section-title {
-      font-size: clamp(40px, 6vw, 84px);
-      margin-bottom: 4vh;
-      max-width: 14ch;
-    }
-    .section-lede {
-      font-size: clamp(17px, 1.5vw, 20px);
-      max-width: 60ch;
-      color: #B8B8B0;
-      line-height: 1.55;
-    }
-
-    /* === CONTEXT FLOW DIAGRAM === */
-    .flow {
-      margin-top: 8vh;
-      border: 1px solid var(--line);
-      padding: 4vh 5%;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 13px;
-      line-height: 1.85;
-      color: #B8B8B0;
-      white-space: pre;
-      overflow-x: auto;
-      letter-spacing: 0;
-    }
-    .flow .hi { color: var(--accent); }
-
-    /* === STEPS === */
-    .step {
+    .flow-step-inner {
+      width: 100%;
+      max-width: 980px;
       display: grid;
       grid-template-columns: minmax(120px, 18%) 1fr;
-      gap: 4vw;
-      border-top: 1px solid var(--line);
-      padding: 14vh 0;
+      gap: 5vw;
+      align-items: start;
     }
-    .step:last-of-type { border-bottom: 1px solid var(--line); }
-
     .step-num {
       font-family: 'JetBrains Mono', monospace;
-      font-size: clamp(48px, 7vw, 96px);
-      font-weight: 500;
-      line-height: 0.9;
-      color: var(--accent);
-      letter-spacing: -0.03em;
-      align-self: start;
-      position: sticky;
-      top: 18vh;
+      font-size: clamp(64px, 9vw, 140px);
+      font-weight: 500; line-height: .85; color: var(--accent);
+      letter-spacing: -.03em;
     }
-    .step-body { max-width: 800px; }
-    .step-meta {
-      display: flex;
-      gap: 18px;
-      flex-wrap: wrap;
-      margin-bottom: 24px;
-    }
+    .step-content { max-width: 720px; padding-top: 8px; }
     .step-tag {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: var(--dim);
-      padding: 4px 10px;
-      border: 1px solid var(--line);
+      font-size: 11px; letter-spacing: .14em;
+      color: var(--dim); text-transform: uppercase;
+      margin-bottom: 16px;
     }
-    .step-tag.accent { color: var(--accent); border-color: var(--accent); }
-    .step h3 {
-      font-size: clamp(32px, 4.2vw, 52px);
-      margin-bottom: 4vh;
-      letter-spacing: -0.03em;
+    .step-tag::before { content: "[ "; color: var(--accent); }
+    .step-tag::after { content: " ]"; color: var(--accent); }
+    .step-content h3 {
+      font-size: clamp(32px, 4.6vw, 60px);
+      font-weight: 700; letter-spacing: -.03em;
+      line-height: .98; margin-bottom: 3vh;
     }
-    .step-body p {
-      font-size: 17px;
-      line-height: 1.6;
-      color: #C8C8C0;
-      margin-bottom: 2vh;
-      max-width: 65ch;
+    .step-desc {
+      font-size: clamp(15px, 1.3vw, 18px);
+      color: var(--soft); line-height: 1.55;
+      max-width: 56ch; margin-bottom: 3vh;
     }
-    .step-body p.lead {
-      font-size: 19px;
-      color: var(--fg);
-      margin-bottom: 4vh;
-    }
-    .step-body ul, .step-body ol {
-      margin: 2vh 0 4vh 0;
-      padding-left: 20px;
-    }
-    .step-body li {
-      font-size: 16px;
-      line-height: 1.65;
-      color: #C8C8C0;
-      margin-bottom: 10px;
-    }
-    .step-body li::marker { color: var(--accent); }
-    .step-body strong { color: var(--fg); font-weight: 500; }
-
-    /* === CODE BLOCKS === */
-    pre.code {
-      background: #050505;
-      border: 1px solid var(--line);
-      border-left: 2px solid var(--accent);
-      padding: 20px 24px;
-      margin: 3vh 0;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 13px;
-      line-height: 1.6;
-      color: #D0D0C8;
-      overflow-x: auto;
-      position: relative;
-    }
-    .code-copy {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      background: transparent;
-      border: 1px solid var(--line);
-      color: var(--dim);
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      padding: 4px 10px;
-      cursor: pointer;
-      transition: all .4s var(--easing);
-    }
-    .code-copy:hover {
-      color: var(--accent);
-      border-color: var(--accent);
-    }
-    .code-copy.copied { color: var(--accent); border-color: var(--accent); }
-
-    /* === KEY-VALUE BLOCKS === */
-    .kv {
-      display: grid;
-      grid-template-columns: max-content 1fr;
-      gap: 16px 28px;
-      margin: 3vh 0 4vh 0;
-      padding: 24px 0;
+    .step-list {
+      list-style: none; padding: 0;
       border-top: 1px solid var(--line);
-      border-bottom: 1px solid var(--line);
+      margin-top: 2vh;
     }
-    .kv dt {
+    .step-list li {
+      padding: 10px 0;
+      border-bottom: 1px solid var(--line);
       font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      letter-spacing: 0.12em;
+      font-size: 13px; color: var(--fg);
+      letter-spacing: 0;
+    }
+    .step-list li::before {
+      content: "▸ ";
+      color: var(--accent);
+    }
+    .step-folders {
+      display: flex; gap: 12px; flex-wrap: wrap;
+      margin-top: 2vh;
+    }
+    .step-folder {
+      padding: 8px 14px;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; letter-spacing: .12em;
       text-transform: uppercase;
-      color: var(--dim);
-      padding-top: 2px;
     }
-    .kv dd { font-size: 15px; color: var(--fg); }
+    .step-note {
+      font-family: 'Caveat', cursive;
+      font-weight: 600;
+      font-size: clamp(18px, 1.7vw, 22px);
+      color: var(--accent);
+      margin-top: 3vh;
+      line-height: 1.2;
+    }
+    .telegram-preview {
+      margin-top: 3vh;
+      border: 1px solid var(--line-strong);
+      padding: 18px 20px;
+      background: rgba(254,46,0,.04);
+      max-width: 380px;
+      font-size: 14px;
+    }
+    .telegram-preview .head {
+      font-weight: 600; color: var(--fg); margin-bottom: 8px;
+    }
+    .telegram-preview .sub { color: var(--soft); margin-bottom: 4px; }
+    .telegram-preview .link { color: var(--accent); margin-top: 8px; }
 
-    /* === ALERT / NOTE === */
-    .note {
-      border-left: 2px solid var(--accent);
-      padding: 16px 0 16px 20px;
-      margin: 3vh 0;
-      color: #C8C8C0;
-      font-size: 15px;
+    /* indicador de paso (esquina superior derecha de cada step) */
+    .step-counter {
+      position: absolute; top: 14vh; right: 8vw;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; color: var(--dim);
+      letter-spacing: .14em; text-transform: uppercase;
     }
-    .note strong { color: var(--accent); }
+    .step-counter b { color: var(--accent); font-weight: 500; }
 
-    /* === CHECKLIST === */
-    .checklist {
-      list-style: none;
-      padding: 0;
-      margin: 4vh 0;
+    /* === SERVICIOS GRID === */
+    .servicios {
+      padding: 18vh 6vw 10vh 6vw;
+      border-top: 1px solid var(--line);
     }
-    .checklist li {
-      padding: 16px 0;
-      border-bottom: 1px solid var(--line);
-      display: flex;
-      align-items: flex-start;
-      gap: 16px;
-      cursor: pointer;
-      transition: color .4s var(--easing);
+    .servicios .tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; letter-spacing: .2em; color: var(--accent);
+      text-transform: uppercase; margin-bottom: 24px;
     }
-    .checklist li:hover { color: var(--fg); }
-    .checklist .box {
-      flex-shrink: 0;
-      width: 16px;
-      height: 16px;
-      border: 1px solid var(--dim);
-      margin-top: 4px;
-      transition: all .4s var(--easing);
-      position: relative;
+    .servicios .tag::before { content: "// "; }
+    .servicios h2 {
+      font-size: clamp(40px, 6vw, 84px);
+      font-weight: 700; letter-spacing: -.04em; line-height: .95;
+      margin-bottom: 6vh;
     }
-    .checklist li.done .box {
-      background: var(--accent);
-      border-color: var(--accent);
-    }
-    .checklist li.done .box::after {
-      content: "";
-      position: absolute;
-      top: 2px; left: 5px;
-      width: 4px; height: 9px;
-      border: solid var(--bg);
-      border-width: 0 2px 2px 0;
-      transform: rotate(45deg);
-    }
-    .checklist .label {
-      font-size: 15px;
-      color: #C8C8C0;
-      flex: 1;
-    }
-    .checklist li.done .label {
-      color: var(--dim);
-      text-decoration: line-through;
-    }
-
-    /* === TIMELINE === */
-    .timeline {
+    .grid {
       display: grid;
-      grid-template-columns: repeat(8, 1fr);
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 1px;
       background: var(--line);
-      margin: 6vh 0;
       border: 1px solid var(--line);
     }
-    .timeline-step {
+    .card {
       background: var(--bg);
-      padding: 20px 14px;
-      min-height: 110px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
+      padding: 28px 24px;
+      transition: background .4s var(--easing);
     }
-    .timeline-step .t-num {
+    .card:hover { background: var(--accent-soft); }
+    .card h4 {
+      font-size: 17px; font-weight: 600;
+      margin-bottom: 8px; color: var(--fg);
+    }
+    .card p {
+      font-size: 14px; color: var(--soft); line-height: 1.5;
+    }
+    .card .badge {
+      display: inline-block; margin-bottom: 12px;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      color: var(--accent);
-      letter-spacing: 0.12em;
+      font-size: 10px; color: var(--accent);
+      letter-spacing: .14em; text-transform: uppercase;
     }
-    .timeline-step .t-name {
+
+    /* === ENV VARS === */
+    .envvars {
+      padding: 10vh 6vw 16vh 6vw;
+    }
+    .envvars .tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; letter-spacing: .2em; color: var(--accent);
+      text-transform: uppercase; margin-bottom: 24px;
+    }
+    .envvars .tag::before { content: "// "; }
+    .envvars h2 {
+      font-size: clamp(40px, 6vw, 84px);
+      font-weight: 700; letter-spacing: -.04em; line-height: .95;
+      margin-bottom: 6vh;
+    }
+    .envvars .vars {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 8px;
+    }
+    .envvar {
+      font-family: 'JetBrains Mono', monospace;
       font-size: 13px;
-      color: var(--fg);
-      font-weight: 500;
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      display: flex; align-items: center; gap: 12px;
+      transition: border-color .4s var(--easing);
     }
-    .timeline-step .t-time {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      color: var(--dim);
-    }
-    @media (max-width: 900px) {
-      .timeline { grid-template-columns: repeat(2, 1fr); }
-    }
-
-    /* === FAQ === */
-    .faq-item {
-      border-bottom: 1px solid var(--line);
-      padding: 28px 0;
-      cursor: pointer;
-    }
-    .faq-item:first-child { border-top: 1px solid var(--line); }
-    .faq-q {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 24px;
-      font-size: clamp(18px, 2vw, 22px);
-      font-weight: 500;
-      color: var(--fg);
-      transition: color .4s var(--easing);
-    }
-    .faq-item:hover .faq-q { color: var(--accent); }
-    .faq-q::after {
-      content: "+";
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 22px;
-      color: var(--accent);
-      transition: transform .5s var(--easing);
-    }
-    .faq-item.open .faq-q::after { transform: rotate(45deg); }
-    .faq-a {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height .6s var(--easing), padding .4s var(--easing);
-      color: #B8B8B0;
-      font-size: 16px;
-      line-height: 1.65;
-    }
-    .faq-item.open .faq-a {
-      max-height: 400px;
-      padding-top: 18px;
+    .envvar:hover { border-color: var(--accent); }
+    .envvar .key { color: var(--fg); }
+    .envvar .dot {
+      width: 8px; height: 8px; background: var(--accent);
+      border-radius: 1px; flex-shrink: 0;
     }
 
-    /* === CTA / CIERRE === */
+    /* === CIERRE + CTA === */
     .cierre {
-      padding: 22vh 0 18vh 0;
-      text-align: center;
+      padding: 22vh 6vw 12vh 6vw;
       border-top: 1px solid var(--line);
+      text-align: center;
     }
     .cierre .frase {
-      font-size: clamp(32px, 5vw, 60px);
-      font-weight: 500;
-      letter-spacing: -0.03em;
-      line-height: 1.05;
-      max-width: 22ch;
-      margin: 0 auto 8vh auto;
+      font-size: clamp(32px, 5.5vw, 72px);
+      font-weight: 600; letter-spacing: -.04em; line-height: 1;
+      max-width: 22ch; margin: 0 auto 4vh auto;
     }
-    .cta-row {
-      display: flex;
+    .cierre .frase b { color: var(--accent); font-weight: 700; }
+    .cierre .sub {
+      font-size: clamp(16px, 1.4vw, 19px);
+      color: var(--soft); max-width: 50ch;
+      margin: 0 auto 8vh auto; line-height: 1.5;
+    }
+    .cta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
       gap: 16px;
-      justify-content: center;
-      flex-wrap: wrap;
+      max-width: 880px;
+      margin: 0 auto;
     }
-    .btn {
-      display: inline-block;
-      padding: 18px 32px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 13px;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
+    .cta-card {
+      padding: 32px 24px;
       border: 1px solid var(--line);
-      color: var(--fg);
+      text-align: left;
       transition: all .4s var(--easing);
-      background: transparent;
-      cursor: pointer;
+      display: flex; flex-direction: column;
+      color: var(--fg);
     }
-    .btn:hover {
+    .cta-card:hover {
       border-color: var(--accent);
-      color: var(--accent);
-      border-bottom: 1px solid var(--accent);
+      transform: translateY(-4px);
     }
-    .btn.primary {
-      background: var(--accent);
-      color: var(--bg);
-      border-color: var(--accent);
+    .cta-card .badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px; letter-spacing: .14em;
+      color: var(--accent); text-transform: uppercase;
+      margin-bottom: 16px;
     }
-    .btn.primary:hover {
-      background: transparent;
+    .cta-card h4 {
+      font-size: 22px; font-weight: 600;
+      margin-bottom: 8px; letter-spacing: -.02em;
+    }
+    .cta-card p {
+      font-size: 14px; color: var(--soft);
+      line-height: 1.5; flex: 1; margin-bottom: 18px;
+    }
+    .cta-card .arrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px; letter-spacing: .14em;
+      color: var(--accent); text-transform: uppercase;
+    }
+
+    .frase-final {
+      padding: 8vh 6vw 12vh 6vw;
+      border-top: 1px solid var(--line);
+      text-align: center;
+    }
+    .frase-final .stamp {
+      font-family: 'Caveat', cursive;
+      font-weight: 700;
+      font-size: clamp(24px, 3vw, 36px);
       color: var(--accent);
+      margin-bottom: 12px;
+    }
+    .frase-final .small {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; color: var(--dim);
+      letter-spacing: .18em; text-transform: uppercase;
     }
 
     /* === FOOTER === */
     footer {
-      padding: 5vh 6vw;
+      padding: 4vh 6vw;
       border-top: 1px solid var(--line);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 16px;
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 16px;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      letter-spacing: 0.1em;
-      color: var(--dim);
-      text-transform: uppercase;
+      font-size: 11px; letter-spacing: .1em;
+      color: var(--dim); text-transform: uppercase;
     }
     footer a { color: var(--dim); }
     footer a:hover { color: var(--accent); }
 
-    /* === CAVEAT (script manuscrita estilo lab) === */
-    .script {
-      font-family: 'Caveat', cursive;
-      font-weight: 600;
-      color: var(--accent);
-      letter-spacing: 0;
-      line-height: 1.1;
-    }
-
-    /* === SCROLL REVEALS === */
-    .reveal {
-      opacity: 0;
-      transform: translateY(30px);
-      transition: opacity 1s var(--easing), transform 1s var(--easing);
-    }
-    .reveal.in {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    /* === PROGRESS BAR === */
-    .progress {
-      position: fixed;
-      top: 0; left: 0;
-      height: 2px;
-      background: var(--accent);
-      width: 0%;
-      z-index: 100;
-      transition: width .15s linear;
-    }
-
-    /* === RESPONSIVE === */
-    @media (max-width: 760px) {
-      .step {
-        grid-template-columns: 1fr;
-        gap: 24px;
+    /* === MOBILE: desactivar pinned scroll === */
+    @media (max-width: 900px) {
+      .flow-section { height: auto !important; }
+      .flow-viewport {
+        position: static; height: auto;
+        overflow: visible;
       }
-      .step-num {
+      .flow-track {
         position: static;
-        font-size: 56px;
+        flex-direction: column;
+        transform: none !important;
       }
-      .hero { padding-top: 18vh; }
+      .flow-step {
+        width: 100vw; height: auto;
+        min-height: 100vh;
+        border-bottom: 1px solid var(--line);
+      }
+      .flow-step-inner {
+        grid-template-columns: 1fr; gap: 24px;
+      }
       .core { display: none; }
     }
   </style>
@@ -684,649 +505,566 @@
 
   <header class="topbar" id="topbar">
     <div class="brand">AUTOSETTER<span class="accent">™</span></div>
-    <div class="meta"><span class="dot"></span>SISTEMA ACTIVADO · v1.0</div>
+    <div class="meta"><span class="dot"></span>CEREBRO · v1.0</div>
   </header>
 
-  <main class="container">
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <div class="tag">// PROTOCOLO 01 · SISTEMA ACTIVADO</div>
+    <h1>
+      <span class="line">CEREBRO</span>
+      <span class="line">DE LLAMADAS<span class="accent">.</span></span>
+    </h1>
+    <div class="by">by <b>AUTOSETTER™</b></div>
+    <p class="lede">
+      Cada llamada se convierte en inteligencia operativa.
+      Automático. Sin que toques nada después de la primera instalación.
+    </p>
+    <div class="scroll-hint">SCROLL · DESCUBRIR</div>
+  </section>
 
-    <!-- ============== HERO ============== -->
-    <section class="hero">
-      <div class="hero-prelude mono-small">// PROTOCOLO · 01 · INSTALACIÓN</div>
-      <h1>
-        <span class="line">El Cerebro</span>
-        <span class="line">de Llamadas<span class="accent">.</span></span>
-      </h1>
-      <p class="hero-sub">
-        El sistema que escucha tus llamadas, las analiza con Claude, archiva
-        cada análisis en Drive y te avisa en Telegram. Sin tocar nada después
-        de la primera instalación.
-      </p>
-      <div class="hero-meta">
-        <div class="hero-meta-item">
-          <span class="label">Duración</span>
-          <span class="value">≈ 90 min</span>
-        </div>
-        <div class="hero-meta-item">
-          <span class="label">Conocimiento</span>
-          <span class="value">Cero código</span>
-        </div>
-        <div class="hero-meta-item">
-          <span class="label">Coste mensual</span>
-          <span class="value">≈ $10–15</span>
-        </div>
-        <div class="hero-meta-item">
-          <span class="label">Pasos</span>
-          <span class="value">08</span>
-        </div>
-      </div>
-      <div class="scroll-hint">SCROLL</div>
-    </section>
+  <!-- ============ FLOW 1 · INTRO ============ -->
+  <section class="flow-intro">
+    <div class="tag">FLUJO 01</div>
+    <h2>Por cada llamada que cuelgas.</h2>
+    <p>
+      30 a 60 segundos. De Google Meet a un Google Doc analizado en tu Drive
+      + un ping en Telegram. 8 pasos invisibles. Cero intervención tuya.
+    </p>
+    <div class="meta">⏱ 30–60s · 8 NODOS · 100% AUTOMÁTICO</div>
+  </section>
 
-    <!-- ============== CONTEXTO ============== -->
-    <section class="reveal">
-      <div class="section-label">Contexto</div>
-      <h2 class="section-title">Esto es lo que vas a montar.</h2>
-      <p class="section-lede">
-        Una vez instalado, cada llamada que grabes con Fathom dispara este
-        flujo en segundos. Te ahorras leer la transcripción, separar lo
-        importante, decidir dónde guardarlo y avisar al equipo. Lo hace todo
-        el sistema. Tú solo cuelgas.
-      </p>
+  <!-- ============ FLOW 1 · PINNED HORIZONTAL ============ -->
+  <section class="flow-section" data-steps="8">
+    <div class="flow-viewport">
+      <div class="flow-track">
 
-<pre class="flow">
-   <span class="hi">[ Tu llamada ]</span>           Google Meet · Zoom
-          │
-          ▼
-   <span class="hi">[ Fathom ]</span>                Graba + transcribe en directo
-          │
-          ▼ (webhook al colgar)
-   <span class="hi">[ Cerebro ]</span>               Flask en Railway · 0.2s respuesta
-          │
-          ▼
-   <span class="hi">[ Claude Haiku ]</span>          Detecta tipo: VENTA · CLIENTE · EQUIPO
-          │
-          ▼
-   <span class="hi">[ Claude Sonnet ]</span>         Análisis profundo del tipo correcto
-          │
-          ▼
-   <span class="hi">[ Google Doc ]</span>            En la carpeta correcta · estilo limpio
-          │
-          ▼
-   <span class="hi">[ Telegram ]</span>              Ping con resumen + link al Doc
-</pre>
-
-      <p class="section-lede" style="margin-top: 4vh;">
-        Además, <strong style="color:var(--accent)">cada 30 días</strong> el
-        sistema genera un Doc maestro con métricas, patrones, wins y alertas
-        del mes — en VENTAS, CLIENTES y EQUIPO. Sin que tengas que pedirlo.
-      </p>
-    </section>
-
-    <!-- ============== TIMELINE ============== -->
-    <section class="reveal">
-      <div class="section-label">Mapa</div>
-      <h2 class="section-title">Los 8 pasos.</h2>
-      <p class="section-lede">
-        Lineal. Sin saltos. Cada paso desbloquea el siguiente.
-      </p>
-      <div class="timeline">
-        <div class="timeline-step"><div class="t-num">01</div><div class="t-name">Pre-flight</div><div class="t-time">5 min</div></div>
-        <div class="timeline-step"><div class="t-num">02</div><div class="t-name">Clonar repo</div><div class="t-time">3 min</div></div>
-        <div class="timeline-step"><div class="t-num">03</div><div class="t-name">Telegram</div><div class="t-time">5 min</div></div>
-        <div class="timeline-step"><div class="t-num">04</div><div class="t-name">Anthropic</div><div class="t-time">3 min</div></div>
-        <div class="timeline-step"><div class="t-num">05</div><div class="t-name">Google Cloud</div><div class="t-time">20 min</div></div>
-        <div class="timeline-step"><div class="t-num">06</div><div class="t-name">Drive · OAuth</div><div class="t-time">15 min</div></div>
-        <div class="timeline-step"><div class="t-num">07</div><div class="t-name">Railway</div><div class="t-time">15 min</div></div>
-        <div class="timeline-step"><div class="t-num">08</div><div class="t-name">Fathom · Test</div><div class="t-time">10 min</div></div>
-      </div>
-    </section>
-
-    <!-- ============== STEPS ============== -->
-
-    <!-- STEP 01 -->
-    <section class="step reveal" id="step-01">
-      <div class="step-num">01</div>
-      <div class="step-body">
-        <div class="step-meta">
-          <span class="step-tag accent">PRE-FLIGHT</span>
-          <span class="step-tag">⏱ 5 MIN</span>
-          <span class="step-tag">REQUISITOS</span>
-        </div>
-        <h3>Antes de empezar, ten esto a mano.</h3>
-        <p class="lead">
-          Vas a crear cuentas en cinco servicios. Si ya tienes alguno, mejor.
-          Todos tienen plan gratuito o trial, excepto Anthropic que necesita
-          un mínimo de $5 cargados.
-        </p>
-        <ul class="checklist">
-          <li><span class="box"></span><span class="label"><strong>Cuenta de Google</strong> — la que usas normalmente para Gmail/Drive</span></li>
-          <li><span class="box"></span><span class="label"><strong>Cuenta de Anthropic</strong> con $5+ cargados — <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a></span></li>
-          <li><span class="box"></span><span class="label"><strong>Cuenta de Fathom</strong> (gratis) — <a href="https://fathom.video" target="_blank">fathom.video</a></span></li>
-          <li><span class="box"></span><span class="label"><strong>Cuenta de Railway</strong> (free trial $5) — <a href="https://railway.app" target="_blank">railway.app</a></span></li>
-          <li><span class="box"></span><span class="label"><strong>Cuenta de GitHub</strong> + Telegram en tu móvil</span></li>
-        </ul>
-        <p class="dim mono">
-          Marca cada item haciendo click. El estado se guarda en local — si
-          vuelves más tarde, mantienes el progreso.
-        </p>
-      </div>
-    </section>
-
-    <!-- STEP 02 -->
-    <section class="step reveal" id="step-02">
-      <div class="step-num">02</div>
-      <div class="step-body">
-        <div class="step-meta">
-          <span class="step-tag accent">CÓDIGO</span>
-          <span class="step-tag">⏱ 3 MIN</span>
-          <span class="step-tag">GITHUB</span>
-        </div>
-        <h3>Clona el repo. Te lo lleves a tu Mac.</h3>
-        <p class="lead">
-          El código entero del Cerebro está en GitHub. No vas a tocar nada
-          ahora — solo lo tienes preparado para el deploy del paso 07.
-        </p>
-        <pre class="code"><button class="code-copy">COPY</button>git clone https://github.com/azerorisk-ui/cerebro-llamadas-autosetter.git
-cd cerebro-llamadas-autosetter
-cp .env.example .env</pre>
-        <p>
-          Ya tienes un <code class="mono">.env</code> vacío con todas las
-          variables que vas a ir rellenando. No lo pierdas de vista.
-        </p>
-        <div class="note">
-          <strong>NOTA</strong> · No hace falta que instales nada localmente
-          (Python, dependencias) si no quieres tocar el código. Railway lo
-          montará todo en el deploy. El <code class="mono">.env</code> en
-          local es solo para tener tus claves en un sitio antes de copiarlas
-          a Railway.
-        </div>
-      </div>
-    </section>
-
-    <!-- STEP 03 -->
-    <section class="step reveal" id="step-03">
-      <div class="step-num">03</div>
-      <div class="step-body">
-        <div class="step-meta">
-          <span class="step-tag accent">TELEGRAM</span>
-          <span class="step-tag">⏱ 5 MIN</span>
-          <span class="step-tag">2 VARIABLES</span>
-        </div>
-        <h3>Crea tu bot de Telegram.</h3>
-        <p class="lead">
-          Necesitas un bot que te envíe los avisos. BotFather lo crea en 90
-          segundos.
-        </p>
-        <ol>
-          <li>Abre Telegram, busca <strong>@BotFather</strong>, dale <strong>Start</strong>.</li>
-          <li>Manda <code class="mono">/newbot</code>.</li>
-          <li>Nombre del bot: lo que quieras (ej. <em>Cerebro Bot</em>).</li>
-          <li>Username: tiene que acabar en <code class="mono">bot</code> y ser único (ej. <code class="mono">cerebrollamadas_bot</code>).</li>
-          <li>BotFather te devuelve el <strong>TOKEN</strong>. Cópialo:</li>
-        </ol>
-        <pre class="code"><button class="code-copy">COPY</button>TELEGRAM_TOKEN=1234567890:AAAAaaaa...XXX</pre>
-        <p>Ahora necesitas tu <strong>CHAT_ID</strong>:</p>
-        <ol>
-          <li>Busca tu nuevo bot en Telegram → manda cualquier mensaje (un <em>hola</em> vale).</li>
-          <li>Abre en el navegador (reemplaza <code class="mono">TU_TOKEN</code>):</li>
-        </ol>
-        <pre class="code"><button class="code-copy">COPY</button>https://api.telegram.org/botTU_TOKEN/getUpdates</pre>
-        <p>Busca <code class="mono">"chat":{"id": ... }</code>. Ese número es tu CHAT_ID:</p>
-        <pre class="code"><button class="code-copy">COPY</button>TELEGRAM_CHAT_ID=123456789</pre>
-        <p>Guarda ambos en tu <code class="mono">.env</code>. ✓</p>
-      </div>
-    </section>
-
-    <!-- STEP 04 -->
-    <section class="step reveal" id="step-04">
-      <div class="step-num">04</div>
-      <div class="step-body">
-        <div class="step-meta">
-          <span class="step-tag accent">ANTHROPIC</span>
-          <span class="step-tag">⏱ 3 MIN</span>
-          <span class="step-tag">CLAUDE API</span>
-        </div>
-        <h3>API key de Claude.</h3>
-        <p class="lead">
-          Claude es el cerebro de verdad. Haiku detecta el tipo de llamada,
-          Sonnet hace el análisis profundo.
-        </p>
-        <ol>
-          <li>Entra a <a href="https://console.anthropic.com/settings/keys" target="_blank">console.anthropic.com/settings/keys</a></li>
-          <li>Asegúrate de tener al menos <strong>$5 cargados</strong> en <em>Plans &amp; Billing</em>.</li>
-          <li>Click <strong>Create Key</strong> → nombre <em>cerebro-llamadas</em> → <strong>Create</strong>.</li>
-          <li>Copia la clave (empieza por <code class="mono">sk-ant-api03-</code>). <strong>Solo se ve una vez.</strong></li>
-        </ol>
-        <pre class="code"><button class="code-copy">COPY</button>ANTHROPIC_API_KEY=sk-ant-api03-xxxxxxxxxxxxxxxx</pre>
-        <div class="note">
-          <strong>COSTE</strong> · Cada llamada analizada cuesta ≈ $0.10 con
-          el modelo dual (Haiku + Sonnet). 100 llamadas/mes ≈ $10.
-        </div>
-      </div>
-    </section>
-
-    <!-- STEP 05 -->
-    <section class="step reveal" id="step-05">
-      <div class="step-num">05</div>
-      <div class="step-body">
-        <div class="step-meta">
-          <span class="step-tag accent">GOOGLE CLOUD</span>
-          <span class="step-tag">⏱ 20 MIN</span>
-          <span class="step-tag">EL MÁS LARGO</span>
-        </div>
-        <h3>Google Cloud — proyecto, APIs y OAuth.</h3>
-        <p class="lead">
-          Esta es la parte más densa pero solo se hace una vez. Vas a crear
-          un proyecto en Google Cloud, activar 2 APIs y crear un OAuth Client
-          para que el sistema pueda crear Docs en TU Drive personal.
-        </p>
-
-        <h4 style="font-size:22px; margin: 5vh 0 2vh 0; color: var(--accent);">5.1 · Crear proyecto</h4>
-        <ol>
-          <li>Entra a <a href="https://console.cloud.google.com" target="_blank">console.cloud.google.com</a></li>
-          <li>Arriba a la izquierda → menú de proyectos → <strong>New Project</strong></li>
-          <li>Nombre: <code class="mono">cerebro-llamadas</code> → <strong>Create</strong></li>
-          <li>Espera 10 segundos a que se cree, selecciónalo arriba.</li>
-        </ol>
-
-        <h4 style="font-size:22px; margin: 5vh 0 2vh 0; color: var(--accent);">5.2 · Activar APIs (Docs + Drive)</h4>
-        <ol>
-          <li>Abre estos dos links (con tu proyecto seleccionado) y pulsa <strong>ENABLE</strong> en cada uno:</li>
-        </ol>
-        <ul>
-          <li><a href="https://console.cloud.google.com/apis/library/docs.googleapis.com" target="_blank">Google Docs API</a></li>
-          <li><a href="https://console.cloud.google.com/apis/library/drive.googleapis.com" target="_blank">Google Drive API</a></li>
-        </ul>
-
-        <h4 style="font-size:22px; margin: 5vh 0 2vh 0; color: var(--accent);">5.3 · OAuth Consent Screen</h4>
-        <p>Esta es la pantalla que verás cuando autorices tu propia app.</p>
-        <ol>
-          <li>Entra a <a href="https://console.cloud.google.com/apis/credentials/consent" target="_blank">OAuth consent screen</a></li>
-          <li><strong>User Type</strong>: External → <strong>Create</strong></li>
-          <li><strong>App name</strong>: <code class="mono">cerebro-llamadas</code></li>
-          <li><strong>User support email</strong>: tu email</li>
-          <li><strong>Developer contact</strong>: tu email</li>
-          <li>Scopes: <strong>SKIP</strong> (no añadas nada)</li>
-          <li><strong>Test users</strong>: añade <strong>TU email de Google</strong> (importante, sin esto te dará "Access blocked")</li>
-          <li>Save and continue → Back to Dashboard</li>
-        </ol>
-
-        <h4 style="font-size:22px; margin: 5vh 0 2vh 0; color: var(--accent);">5.4 · OAuth Client ID</h4>
-        <ol>
-          <li>Entra a <a href="https://console.cloud.google.com/apis/credentials" target="_blank">Credentials</a></li>
-          <li><strong>+ Create Credentials</strong> → <strong>OAuth client ID</strong></li>
-          <li><strong>Application type</strong>: <code class="mono">Desktop app</code></li>
-          <li><strong>Name</strong>: <code class="mono">cerebro-llamadas-cli</code></li>
-          <li><strong>Create</strong> → te aparece el <strong>Client ID</strong> y <strong>Client Secret</strong></li>
-          <li>Guárdalos en tu <code class="mono">.env</code>:</li>
-        </ol>
-        <pre class="code"><button class="code-copy">COPY</button>GOOGLE_OAUTH_CLIENT_ID=123456789-xxxxxxx.apps.googleusercontent.com
-GOOGLE_OAUTH_CLIENT_SECRET=GOCSPX-xxxxxxxxxxxxx</pre>
-
-        <div class="note">
-          <strong>WTF MOMENT</strong> · Si en el siguiente paso Google te
-          dice <em>"Google no ha verificado esta app"</em> es normal. Es tu
-          propia app sin verificar. Click <strong>Configuración avanzada</strong>
-          → <strong>Ir a cerebro-llamadas (no seguro)</strong>. Es seguro:
-          es tu app autorizándose a sí misma con tu cuenta.
-        </div>
-      </div>
-    </section>
-
-    <!-- STEP 06 -->
-    <section class="step reveal" id="step-06">
-      <div class="step-num">06</div>
-      <div class="step-body">
-        <div class="step-meta">
-          <span class="step-tag accent">DRIVE · OAUTH</span>
-          <span class="step-tag">⏱ 15 MIN</span>
-          <span class="step-tag">4 CARPETAS · 1 TOKEN</span>
-        </div>
-        <h3>Crea las carpetas y obtén tu refresh token.</h3>
-
-        <h4 style="font-size:22px; margin: 5vh 0 2vh 0; color: var(--accent);">6.1 · Las 4 carpetas en Drive</h4>
-        <p>En tu Google Drive crea estas 4 carpetas (donde quieras, ej. dentro de una carpeta "AUTOSETTER"):</p>
-        <ul>
-          <li><strong>VENTAS</strong> — para los Docs de llamadas comerciales</li>
-          <li><strong>CLIENTES</strong> — para llamadas de seguimiento/customer</li>
-          <li><strong>EQUIPO</strong> — para reuniones internas</li>
-          <li><strong>MAESTROS</strong> — para los resúmenes mensuales agregados</li>
-        </ul>
-        <p>Abre cada carpeta. La URL será algo así:</p>
-        <pre class="code">https://drive.google.com/drive/folders/<span class="accent">1ABC...XYZ</span></pre>
-        <p>La parte resaltada es el <strong>ID</strong>. Cópialos a tu <code class="mono">.env</code>:</p>
-        <pre class="code"><button class="code-copy">COPY</button>FOLDER_VENTAS=1ABC...XYZ
-FOLDER_CLIENTES=1DEF...UVW
-FOLDER_EQUIPO=1GHI...RST
-FOLDER_MAESTROS=1JKL...OPQ</pre>
-
-        <h4 style="font-size:22px; margin: 5vh 0 2vh 0; color: var(--accent);">6.2 · Refresh token OAuth</h4>
-        <p>
-          Este token permite al servidor crear Docs en tu Drive sin que
-          tengas que iniciar sesión cada vez. Se obtiene corriendo un
-          script local UNA vez.
-        </p>
-        <p>En tu Mac, dentro del repo clonado:</p>
-        <pre class="code"><button class="code-copy">COPY</button>pip3 install google-auth-oauthlib
-python3 scripts/get_refresh_token.py</pre>
-        <p>
-          Antes de correrlo, edita el script o exporta variables con tu
-          <code class="mono">CLIENT_ID</code> y <code class="mono">CLIENT_SECRET</code>
-          del paso 5.4. Se abrirá tu navegador, autorizas con tu cuenta, y
-          la terminal te imprime el <code class="mono">REFRESH_TOKEN</code>.
-        </p>
-        <pre class="code"><button class="code-copy">COPY</button>GOOGLE_OAUTH_REFRESH_TOKEN=1//03xxxxxxxxxxxxxxx</pre>
-        <div class="note">
-          <strong>UNA SOLA VEZ</strong> · El refresh token es eterno (mientras
-          tu cuenta sea Test User del OAuth Consent). No vas a tener que
-          repetir esto nunca más.
-        </div>
-      </div>
-    </section>
-
-    <!-- STEP 07 -->
-    <section class="step reveal" id="step-07">
-      <div class="step-num">07</div>
-      <div class="step-body">
-        <div class="step-meta">
-          <span class="step-tag accent">RAILWAY</span>
-          <span class="step-tag">⏱ 15 MIN</span>
-          <span class="step-tag">DEPLOY</span>
-        </div>
-        <h3>Sube el cerebro a Railway.</h3>
-        <p class="lead">
-          Railway va a coger tu repo de GitHub, instalar dependencias y
-          arrancar la app. Auto-deploy cada vez que hagas push.
-        </p>
-        <ol>
-          <li>Entra a <a href="https://railway.app" target="_blank">railway.app</a> → <strong>New Project</strong> → <strong>Deploy from GitHub repo</strong></li>
-          <li>Autoriza Railway a leer tu GitHub si no lo has hecho.</li>
-          <li>Selecciona el repo <code class="mono">cerebro-llamadas-autosetter</code> (necesitarás haberlo clonado <em>a tu cuenta</em> primero — fork si lo tomas del original).</li>
-          <li>Railway empieza a desplegar. Va a fallar la primera vez por falta de env vars: no pasa nada.</li>
-          <li>Entra al servicio → <strong>Variables</strong> → pega TODAS las variables de tu <code class="mono">.env</code>:</li>
-        </ol>
-        <pre class="code">ANTHROPIC_API_KEY=...
-TELEGRAM_TOKEN=...
-TELEGRAM_CHAT_ID=...
-GOOGLE_OAUTH_CLIENT_ID=...
-GOOGLE_OAUTH_CLIENT_SECRET=...
-GOOGLE_OAUTH_REFRESH_TOKEN=...
-FOLDER_VENTAS=...
-FOLDER_CLIENTES=...
-FOLDER_EQUIPO=...
-FOLDER_MAESTROS=...
-CRON_TOKEN=...</pre>
-        <p>
-          Para <code class="mono">CRON_TOKEN</code> genera uno aleatorio:
-        </p>
-        <pre class="code"><button class="code-copy">COPY</button>python3 -c "import secrets; print(secrets.token_urlsafe(24))"</pre>
-        <p>
-          Tras meter las variables, Railway redespliega solo. Cuando termine
-          (verás <em>Active</em> en verde), pulsa <strong>Settings</strong> →
-          <strong>Networking</strong> → <strong>Generate Domain</strong>.
-        </p>
-        <p>
-          Te da una URL tipo
-          <code class="mono">tu-app.up.railway.app</code>. Apúntala — la
-          necesitas en el paso siguiente.
-        </p>
-      </div>
-    </section>
-
-    <!-- STEP 08 -->
-    <section class="step reveal" id="step-08">
-      <div class="step-num">08</div>
-      <div class="step-body">
-        <div class="step-meta">
-          <span class="step-tag accent">FATHOM · TEST</span>
-          <span class="step-tag">⏱ 10 MIN</span>
-          <span class="step-tag">FINAL</span>
-        </div>
-        <h3>Conecta Fathom y haz tu primera llamada.</h3>
-
-        <h4 style="font-size:22px; margin: 5vh 0 2vh 0; color: var(--accent);">8.1 · Configurar el webhook en Fathom</h4>
-        <ol>
-          <li>Entra a Fathom → tu avatar → <strong>Settings</strong> → <strong>Integrations</strong> → <strong>Webhooks</strong></li>
-          <li><strong>Add Webhook</strong>:</li>
-        </ol>
-        <pre class="code"><button class="code-copy">COPY</button>URL: https://tu-app.up.railway.app/webhook/fathom
-Trigger: Meeting recorded (con transcript)</pre>
-        <p>Guarda. Fathom enviará un payload a tu endpoint cada vez que termines una llamada.</p>
-
-        <h4 style="font-size:22px; margin: 5vh 0 2vh 0; color: var(--accent);">8.2 · Tu primera llamada de prueba</h4>
-        <ol>
-          <li>Abre un Google Meet contigo mismo (o con alguien).</li>
-          <li>Inicia la grabación de Fathom.</li>
-          <li>Habla 1-2 minutos. Di una frase clara que vaya a una categoría: si es venta, "te ofrezco esto por X euros". Si es equipo, "vamos a decidir el roadmap". Si es cliente, "tenemos un problema con la plataforma".</li>
-          <li>Cuelga.</li>
-          <li>Espera 1-3 minutos (Fathom procesa).</li>
-          <li>📱 <strong>Recibirás un ping en Telegram</strong> con el resumen + link al Doc.</li>
-        </ol>
-
-        <div class="note">
-          <strong>SI NO LLEGA EN 5 MIN</strong> · Abre Railway → tu servicio
-          → <strong>Logs</strong>. Busca <code class="mono">📨 Webhook recibido</code>.
-          Si no aparece, el webhook de Fathom no está disparando — revisa
-          la URL. Si aparece pero hay error, el log te dice qué falla.
-        </div>
-
-        <h4 style="font-size:22px; margin: 5vh 0 2vh 0; color: var(--accent);">8.3 · Activar el doc maestro mensual</h4>
-        <p>
-          Ya está activo. Cada día a las 9:00 (hora Madrid) el sistema
-          comprueba si han pasado 30 días desde el último maestro y, si sí,
-          lo genera con resumen de VENTAS · CLIENTES · EQUIPO.
-        </p>
-        <p>Si quieres forzar uno ahora mismo (útil para probar):</p>
-        <pre class="code"><button class="code-copy">COPY</button>curl -X POST "https://tu-app.up.railway.app/cron/maestro?token=TU_CRON_TOKEN&force=1"</pre>
-      </div>
-    </section>
-
-    <!-- ============== FAQ ============== -->
-    <section class="reveal">
-      <div class="section-label">FAQ</div>
-      <h2 class="section-title">Antes de que preguntes.</h2>
-
-      <div style="margin-top: 6vh;">
-        <div class="faq-item">
-          <div class="faq-q">¿Cuánto cuesta tener esto vivo al mes?</div>
-          <div class="faq-a">
-            Anthropic: ≈ $0.10 por llamada (Haiku + Sonnet). 100 llamadas ≈
-            $10. Railway: free trial $5/mes; después ≈ $5/mes con uso bajo.
-            Google: gratis. Telegram: gratis. Fathom: free tier vale (15
-            llamadas/mes); pro $19/mes si quieres ilimitado.
+        <!-- 1 -->
+        <div class="flow-step">
+          <div class="step-counter">FLUJO 01 · <b>01 / 08</b></div>
+          <div class="flow-step-inner">
+            <div class="step-num">01</div>
+            <div class="step-content">
+              <div class="step-tag">CALL · SOURCE</div>
+              <h3>Google Meet, Zoom o Teams.</h3>
+              <p class="step-desc">Tú haces tu llamada como siempre. Comercial, cliente, equipo, lo que sea. No cambias absolutamente nada de tu rutina.</p>
+              <div class="step-note">no aprendes nada nuevo · sigues haciendo lo de siempre</div>
+            </div>
           </div>
         </div>
 
-        <div class="faq-item">
-          <div class="faq-q">¿Es seguro mandar mis llamadas a Claude/Google?</div>
-          <div class="faq-a">
-            Anthropic no entrena con datos de API. Google es tu propio Drive
-            personal — solo tú accedes. Fathom ya tiene tus llamadas porque
-            es quien las graba: el cerebro solo lee la transcripción que
-            Fathom te envía. Si tus llamadas son sensibles, valora si quieres
-            terceros analizándolas.
+        <!-- 2 -->
+        <div class="flow-step">
+          <div class="step-counter">FLUJO 01 · <b>02 / 08</b></div>
+          <div class="flow-step-inner">
+            <div class="step-num">02</div>
+            <div class="step-content">
+              <div class="step-tag">FATHOM · SAAS</div>
+              <h3>Fathom escucha en directo.</h3>
+              <p class="step-desc">Graba el audio y transcribe palabra por palabra mientras hablas. Al colgar, prepara el JSON y dispara un webhook a tu servidor.</p>
+              <ul class="step-list">
+                <li>audio.flac → transcripción.json</li>
+                <li>speakers identificados</li>
+                <li>timestamps por frase</li>
+              </ul>
+            </div>
           </div>
         </div>
 
-        <div class="faq-item">
-          <div class="faq-q">¿Puedo cambiar el formato del Doc o los prompts?</div>
-          <div class="faq-a">
-            Sí. Los prompts están al principio de <code class="mono">main.py</code>
-            (<code class="mono">PROMPT_VENTA</code>, <code class="mono">PROMPT_CLIENTE</code>,
-            <code class="mono">PROMPT_EQUIPO</code>). El formato del Doc se
-            construye en <code class="mono">build_html_venta/equipo/cliente</code>
-            como HTML. Edita, push, Railway redespliega solo.
+        <!-- 3 -->
+        <div class="flow-step">
+          <div class="step-counter">FLUJO 01 · <b>03 / 08</b></div>
+          <div class="flow-step-inner">
+            <div class="step-num">03</div>
+            <div class="step-content">
+              <div class="step-tag">WEBHOOK · POST</div>
+              <h3>Fathom → Railway.</h3>
+              <p class="step-desc">POST HTTP con el JSON completo de la llamada al endpoint <span class="mono accent">/webhook/fathom</span> de tu servidor en Railway.</p>
+              <ul class="step-list">
+                <li>title · meeting_title</li>
+                <li>transcript [...]</li>
+                <li>recorded_by · invitees</li>
+                <li>default_summary · share_url</li>
+              </ul>
+            </div>
           </div>
         </div>
 
-        <div class="faq-item">
-          <div class="faq-q">¿Y si no sé programar nada?</div>
-          <div class="faq-a">
-            Este manual está diseñado para que no toques código. Si lo sigues
-            literal, instalas y nunca tocas el repo. Si quieres personalizar
-            algo (los prompts de Claude, por ejemplo), pega el archivo en
-            ChatGPT/Claude y pídele que cambie lo que quieras.
+        <!-- 4 -->
+        <div class="flow-step">
+          <div class="step-counter">FLUJO 01 · <b>04 / 08</b></div>
+          <div class="flow-step-inner">
+            <div class="step-num">04</div>
+            <div class="step-content">
+              <div class="step-tag">FLASK SERVER · NODE</div>
+              <h3>200 OK en 0.2 segundos.</h3>
+              <p class="step-desc">El servidor responde a Fathom inmediatamente (para que no reintente) y lanza el procesamiento pesado en un <span class="mono accent">background thread</span>. Cero timeouts.</p>
+              <div class="step-note">truco clave: responder rápido + procesar después</div>
+            </div>
           </div>
         </div>
+
+        <!-- 5 -->
+        <div class="flow-step">
+          <div class="step-counter">FLUJO 01 · <b>05 / 08</b></div>
+          <div class="flow-step-inner">
+            <div class="step-num">05</div>
+            <div class="step-content">
+              <div class="step-tag">CLAUDE HAIKU 4.5 · LLM</div>
+              <h3>Detecta el tipo de llamada.</h3>
+              <p class="step-desc">Una llamada ligera a Claude Haiku con un prompt corto. Devuelve un JSON con una sola etiqueta. Modelo barato porque el trabajo es trivial.</p>
+              <div class="step-folders">
+                <span class="step-folder">VENTA</span>
+                <span class="step-folder">CLIENTE</span>
+                <span class="step-folder">EQUIPO</span>
+              </div>
+              <div class="step-note">~$0.0002 por llamada · cents</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6 -->
+        <div class="flow-step">
+          <div class="step-counter">FLUJO 01 · <b>06 / 08</b></div>
+          <div class="flow-step-inner">
+            <div class="step-num">06</div>
+            <div class="step-content">
+              <div class="step-tag">CLAUDE SONNET 4.6 · LLM</div>
+              <h3>Análisis profundo en JSON.</h3>
+              <p class="step-desc">Prompt específico del tipo detectado. Sonnet lee la transcripción entera y devuelve análisis estructurado completo.</p>
+              <ul class="step-list">
+                <li>resumen ejecutivo</li>
+                <li>puntos positivos del closer</li>
+                <li>errores cometidos</li>
+                <li>objeciones · cómo se manejaron</li>
+                <li>frases clave del cliente</li>
+                <li>mejoras detalladas con script</li>
+                <li>próximos pasos</li>
+                <li>puntuación · 1–10</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- 7 -->
+        <div class="flow-step">
+          <div class="step-counter">FLUJO 01 · <b>07 / 08</b></div>
+          <div class="flow-step-inner">
+            <div class="step-num">07</div>
+            <div class="step-content">
+              <div class="step-tag">GOOGLE DRIVE · DOCS API</div>
+              <h3>HTML → Google Doc nativo.</h3>
+              <p class="step-desc">El sistema construye HTML con el análisis y lo sube a Drive con <span class="mono accent">mimeType=text/html</span>. Drive lo convierte en Doc nativo con estilos limpios. Va a la carpeta correcta según el tipo.</p>
+              <div class="step-folders">
+                <span class="step-folder">📁 FOLDER_VENTAS</span>
+                <span class="step-folder">📁 FOLDER_CLIENTES</span>
+                <span class="step-folder">📁 FOLDER_EQUIPO</span>
+              </div>
+              <div class="step-note">+ un .json hermano oculto · para el maestro mensual</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 8 -->
+        <div class="flow-step">
+          <div class="step-counter">FLUJO 01 · <b>08 / 08</b></div>
+          <div class="flow-step-inner">
+            <div class="step-num">08</div>
+            <div class="step-content">
+              <div class="step-tag">TELEGRAM BOT · NOTIFY</div>
+              <h3>Ping con link clicable.</h3>
+              <p class="step-desc">Mensaje HTML formateado a tu Telegram. Resumen de 2 líneas + link directo al Google Doc para abrir el análisis completo en un click.</p>
+              <div class="telegram-preview">
+                <div class="head">📞 VENTA-007 · Carlos Méndez</div>
+                <div class="sub">❌ No cerrada</div>
+                <div class="sub">Resumen corto del análisis...</div>
+                <div class="link">📄 Ver análisis completo →</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- ============== CIERRE ============== -->
-    <section class="cierre">
-      <p class="frase">
-        El código está hecho. El manual está hecho.<br>
-        Solo te quedan <span class="accent">90 minutos</span>.
-      </p>
-      <div class="cta-row">
-        <a class="btn primary" href="https://github.com/azerorisk-ui/cerebro-llamadas-autosetter" target="_blank">Clonar el repo →</a>
-        <a class="btn" href="#" id="yt-link" target="_blank">Ver el vídeo →</a>
+  <!-- ============ FLOW 2 · INTRO ============ -->
+  <section class="flow-intro">
+    <div class="tag">FLUJO 02</div>
+    <h2>Y cada 30 días, sin pedírtelo.</h2>
+    <p>
+      El sistema agrega solo. Un Doc Maestro con métricas, patrones, wins y
+      alertas de los últimos 30 días en VENTAS, CLIENTES y EQUIPO. Lo
+      necesitas y aparece. Igual que en management consultancies premium —
+      pero gratis y a las 9:00 a.m.
+    </p>
+    <div class="meta">⏰ 09:00 MADRID · 30 DÍAS ROLLING · APSCHEDULER</div>
+  </section>
+
+  <!-- ============ FLOW 2 · PINNED HORIZONTAL ============ -->
+  <section class="flow-section" data-steps="8">
+    <div class="flow-viewport">
+      <div class="flow-track">
+
+        <!-- 1 -->
+        <div class="flow-step">
+          <div class="step-counter">FLUJO 02 · <b>01 / 08</b></div>
+          <div class="flow-step-inner">
+            <div class="step-num">01</div>
+            <div class="step-content">
+              <div class="step-tag">APSCHEDULER · CRON</div>
+              <h3>Vive dentro de Railway.</h3>
+              <p class="step-desc">Un thread daemon corre junto al servidor Flask. No necesita servicios externos ni endpoints públicos. Despierta y se duerme solo.</p>
+              <div class="step-note">cero infra extra · cero cron-job.org</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2 -->
+        <div class="flow-step">
+          <div class="step-counter">FLUJO 02 · <b>02 / 08</b></div>
+          <div class="flow-step-inner">
+            <div class="step-num">02</div>
+            <div class="step-content">
+              <div class="step-tag">TRIGGER · DAILY</div>
+              <h3>Todos los días · 09:00 Madrid.</h3>
+              <p class="step-desc">El scheduler ejecuta <span class="mono accent">maestro_si_toca()</span> a primera hora. No genera siempre — solo evalúa si toca.</p>
+              <ul class="step-list">
+                <li>timezone Europe/Madrid</li>
+                <li>cron · hour=9, minute=0</li>
+                <li>idempotente · seguro re-arrancar</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3 -->
+        <div class="flow-step">
+          <div class="step-counter">FLUJO 02 · <b>03 / 08</b></div>
+          <div class="flow-step-inner">
+            <div class="step-num">03</div>
+            <div class="step-content">
+              <div class="step-tag">DECISION GATE</div>
+              <h3>¿Último Maestro &lt; 30 días?</h3>
+              <p class="step-desc">El scheduler chequea cuándo se creó el último Doc Maestro en FOLDER_MAESTROS.</p>
+              <ul class="step-list">
+                <li>SÍ · &lt; 30 días → no hace nada · sale</li>
+                <li>NO · ≥ 30 días → continúa al paso 04</li>
+              </ul>
+              <div class="step-note">si no existe ninguno · genera el primero</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4 -->
+        <div class="flow-step">
+          <div class="step-counter">FLUJO 02 · <b>04 / 08</b></div>
+          <div class="flow-step-inner">
+            <div class="step-num">04</div>
+            <div class="step-content">
+              <div class="step-tag">DRIVE · READ</div>
+              <h3>Lee los .json de 30 días.</h3>
+              <p class="step-desc">Recorre las 3 carpetas y carga los archivos .json hermanos creados los últimos 30 días. Cada uno contiene el análisis estructurado completo de una llamada.</p>
+              <div class="step-folders">
+                <span class="step-folder">VENTAS</span>
+                <span class="step-folder">CLIENTES</span>
+                <span class="step-folder">EQUIPO</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5 -->
+        <div class="flow-step">
+          <div class="step-counter">FLUJO 02 · <b>05 / 08</b></div>
+          <div class="flow-step-inner">
+            <div class="step-num">05</div>
+            <div class="step-content">
+              <div class="step-tag">CLAUDE SONNET 4.6 · AGGREGATOR</div>
+              <h3>Resumen del mes.</h3>
+              <p class="step-desc">3 llamadas independientes a Sonnet (una por categoría) con un prompt agregador. Devuelve JSON estructurado por bloque.</p>
+              <ul class="step-list">
+                <li>headline del mes</li>
+                <li>métricas clave</li>
+                <li>patrones detectados</li>
+                <li>wins · llamadas destacables</li>
+                <li>alertas · riesgos</li>
+                <li>recomendaciones accionables</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6 -->
+        <div class="flow-step">
+          <div class="step-counter">FLUJO 02 · <b>06 / 08</b></div>
+          <div class="flow-step-inner">
+            <div class="step-num">06</div>
+            <div class="step-content">
+              <div class="step-tag">HTML MAESTRO · BUILD</div>
+              <h3>Un solo Doc, 3 secciones.</h3>
+              <p class="step-desc">Construye HTML con cabecera + 3 grandes secciones (una por categoría) y pie de página. Mismo branding que los Docs individuales.</p>
+              <div class="step-folders">
+                <span class="step-folder">💼 VENTAS</span>
+                <span class="step-folder">🤝 CLIENTES</span>
+                <span class="step-folder">👥 EQUIPO</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 7 -->
+        <div class="flow-step">
+          <div class="step-counter">FLUJO 02 · <b>07 / 08</b></div>
+          <div class="flow-step-inner">
+            <div class="step-num">07</div>
+            <div class="step-content">
+              <div class="step-tag">FOLDER_MAESTROS · STORE</div>
+              <h3>Doc Maestro mensual.</h3>
+              <p class="step-desc">Sube el HTML a Drive vía Drive API → se convierte en Google Doc nativo. Nombre formateado con el periodo cubierto.</p>
+              <ul class="step-list">
+                <li>MAESTRO · 21 abr → 21 may 2026</li>
+                <li>compartible · link directo</li>
+                <li>+ .json hermano para histórico</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- 8 -->
+        <div class="flow-step">
+          <div class="step-counter">FLUJO 02 · <b>08 / 08</b></div>
+          <div class="flow-step-inner">
+            <div class="step-num">08</div>
+            <div class="step-content">
+              <div class="step-tag">TELEGRAM · NOTIFY</div>
+              <h3>Aviso del nuevo Maestro.</h3>
+              <p class="step-desc">Mensaje a Telegram con resumen de la cobertura del mes + link directo al Doc Maestro.</p>
+              <div class="telegram-preview">
+                <div class="head">📚 Doc Maestro generado</div>
+                <div class="sub">📅 21 abr → 21 may 2026</div>
+                <div class="sub">📊 47 ventas · 12 clientes · 8 reuniones</div>
+                <div class="link">📄 Ver maestro →</div>
+              </div>
+              <div class="step-note">opcional · endpoint manual /cron/maestro?token=XXX&force=1</div>
+            </div>
+          </div>
+        </div>
+
       </div>
-      <p class="mono-small" style="margin-top: 5vh;">
-        SISTEMA · AUTOSETTER™ · 2026
-      </p>
-    </section>
+    </div>
+  </section>
 
-  </main>
+  <!-- ============ SERVICIOS / INFRA ============ -->
+  <section class="servicios">
+    <div class="tag">Stack</div>
+    <h2>Servicios &amp; infra.</h2>
+    <div class="grid">
+      <div class="card">
+        <div class="badge">SAAS · CAPTURE</div>
+        <h4>Fathom</h4>
+        <p>Graba audio y transcribe en directo. Dispara el webhook al colgar.</p>
+      </div>
+      <div class="card">
+        <div class="badge">API · INTELLIGENCE</div>
+        <h4>Anthropic API</h4>
+        <p>Claude Haiku 4.5 (detección) + Claude Sonnet 4.6 (análisis + agregación).</p>
+      </div>
+      <div class="card">
+        <div class="badge">BOT · NOTIFY</div>
+        <h4>Telegram Bot API</h4>
+        <p>Notificaciones a tu móvil con resumen + link directo al Doc.</p>
+      </div>
+      <div class="card">
+        <div class="badge">HOST · BACKEND</div>
+        <h4>Railway</h4>
+        <p>Servidor Flask 24/7. Auto-deploy en cada push a GitHub. ~$5/mes.</p>
+      </div>
+      <div class="card">
+        <div class="badge">STORAGE · DOCS</div>
+        <h4>Google Drive · Docs API</h4>
+        <p>Almacena los Docs analizados + los .json hermanos invisibles al cliente.</p>
+      </div>
+      <div class="card">
+        <div class="badge">CI/CD · AUTO</div>
+        <h4>GitHub → Railway</h4>
+        <p>Push a main = redeploy automático en producción. Cero clicks.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ENV VARS ============ -->
+  <section class="envvars">
+    <div class="tag">Config</div>
+    <h2>Variables clave.</h2>
+    <p class="step-desc" style="max-width: 60ch; margin-bottom: 5vh;">
+      Todo lo que necesitas para conectar las piezas. Se configuran una vez
+      en Railway → Variables. Cero hardcoded en el código.
+    </p>
+    <div class="vars">
+      <div class="envvar"><span class="dot"></span><span class="key">ANTHROPIC_API_KEY</span></div>
+      <div class="envvar"><span class="dot"></span><span class="key">TELEGRAM_TOKEN</span></div>
+      <div class="envvar"><span class="dot"></span><span class="key">TELEGRAM_CHAT_ID</span></div>
+      <div class="envvar"><span class="dot"></span><span class="key">GOOGLE_OAUTH_CLIENT_ID</span></div>
+      <div class="envvar"><span class="dot"></span><span class="key">GOOGLE_OAUTH_CLIENT_SECRET</span></div>
+      <div class="envvar"><span class="dot"></span><span class="key">GOOGLE_OAUTH_REFRESH_TOKEN</span></div>
+      <div class="envvar"><span class="dot"></span><span class="key">FOLDER_VENTAS</span></div>
+      <div class="envvar"><span class="dot"></span><span class="key">FOLDER_CLIENTES</span></div>
+      <div class="envvar"><span class="dot"></span><span class="key">FOLDER_EQUIPO</span></div>
+      <div class="envvar"><span class="dot"></span><span class="key">FOLDER_MAESTROS</span></div>
+      <div class="envvar"><span class="dot"></span><span class="key">CRON_TOKEN</span></div>
+    </div>
+  </section>
+
+  <!-- ============ CIERRE + CTA ============ -->
+  <section class="cierre">
+    <p class="frase">
+      <b>Llama.</b> Analiza. Aprende. Mejora. <b>Siempre.</b>
+    </p>
+    <p class="sub">
+      Tienes el sistema. Tienes el manual. Tienes 90 minutos. Lo que
+      separa a un equipo con sistemas de uno sin ellos es haberlos montado.
+    </p>
+    <div class="cta-grid">
+      <a class="cta-card" href="https://claude.com/code" target="_blank">
+        <div class="badge">01 · INSTALAR</div>
+        <h4>Descarga Claude Code</h4>
+        <p>El editor con IA que te guía paso a paso. Háblale en español, él hace el trabajo. $20/mes Pro.</p>
+        <div class="arrow">claude.com/code →</div>
+      </a>
+      <a class="cta-card" href="https://docs.google.com/document/d/1xAswdq_xt8FRm42nVG7nfI3HSG1-EDG6/edit" target="_blank">
+        <div class="badge">02 · LEER</div>
+        <h4>El manual paso a paso</h4>
+        <p>Google Doc oficial con los 8 pasos para montar el sistema sin saber programar. Incluye gotchas y debugging.</p>
+        <div class="arrow">abrir Google Doc →</div>
+      </a>
+      <a class="cta-card" href="#" id="yt-link" target="_blank">
+        <div class="badge">03 · VER</div>
+        <h4>Vídeo paso a paso</h4>
+        <p>El walkthrough completo en YouTube. Yo lo monto en pantalla mientras hablo. Próximamente.</p>
+        <div class="arrow">vídeo →</div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ============ STAMP FINAL ============ -->
+  <section class="frase-final">
+    <div class="stamp">Inteligencia operativa en automático.</div>
+    <div class="small">AUTOSETTER™ · CEREBRO DE LLAMADAS · 2026</div>
+  </section>
 
   <footer>
-    <div>AUTOSETTER<span class="accent">™</span> · CEREBRO DE LLAMADAS · v1.0</div>
-    <div><a href="https://github.com/azerorisk-ui/cerebro-llamadas-autosetter" target="_blank">CÓDIGO</a> · <a href="https://autosetter-lab.pages.dev" target="_blank">LAB</a></div>
+    <div>AUTOSETTER<span class="accent">™</span> · CEREBRO DE LLAMADAS</div>
+    <div><a href="https://docs.google.com/document/d/1xAswdq_xt8FRm42nVG7nfI3HSG1-EDG6/edit" target="_blank">MANUAL</a> · <a href="https://autosetter-lab.pages.dev" target="_blank">LAB</a></div>
   </footer>
 
   <script>
-    // ========== TOPBAR scrolled state ==========
+    // ========= TOPBAR + PROGRESS =========
     const topbar = document.getElementById('topbar');
     const progress = document.getElementById('progress');
-    let coreSideTriggered = false;
-    window.addEventListener('scroll', () => {
+    let lastScroll = 0;
+    function onScroll() {
       const y = window.scrollY;
-      if (y > 80) topbar.classList.add('scrolled');
+      if (y > 60) topbar.classList.add('scrolled');
       else topbar.classList.remove('scrolled');
-
       const h = document.documentElement.scrollHeight - window.innerHeight;
       progress.style.width = (y / h * 100) + '%';
+      lastScroll = y;
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
 
-      // Núcleo a un lado tras pasar el hero
-      if (y > window.innerHeight * 0.7 && !coreSideTriggered) {
-        document.body.classList.add('core-side');
-        coreSideTriggered = true;
-      } else if (y < window.innerHeight * 0.5 && coreSideTriggered) {
-        document.body.classList.remove('core-side');
-        coreSideTriggered = false;
+    // ========= HORIZONTAL PINNED SCROLL =========
+    const flowSections = document.querySelectorAll('.flow-section');
+    function setupFlow(section) {
+      const steps = parseInt(section.dataset.steps);
+      const track = section.querySelector('.flow-track');
+
+      function applyHeight() {
+        if (window.innerWidth <= 900) {
+          section.style.height = '';
+          return;
+        }
+        section.style.height = (window.innerHeight * steps) + 'px';
       }
-    });
+      applyHeight();
+      window.addEventListener('resize', applyHeight);
 
-    // ========== INTERSECTION OBSERVER reveals ==========
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (e.isIntersecting) {
-          e.target.classList.add('in');
-          io.unobserve(e.target);
-        }
-      });
-    }, { threshold: 0.15, rootMargin: '0px 0px -10% 0px' });
-    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+      function update() {
+        if (window.innerWidth <= 900) return;
+        const rect = section.getBoundingClientRect();
+        const sectionHeight = section.offsetHeight;
+        const scrollable = sectionHeight - window.innerHeight;
+        const scrolled = Math.max(0, Math.min(scrollable, -rect.top));
+        const progress = scrolled / scrollable;
+        const maxX = track.scrollWidth - window.innerWidth;
+        track.style.transform = `translate3d(${-progress * maxX}px, 0, 0)`;
+      }
+      window.addEventListener('scroll', update, { passive: true });
+      window.addEventListener('resize', update);
+      update();
+    }
+    flowSections.forEach(setupFlow);
 
-    // ========== FAQ accordion ==========
-    document.querySelectorAll('.faq-item').forEach(item => {
-      item.addEventListener('click', () => item.classList.toggle('open'));
-    });
-
-    // ========== CHECKLIST persistence ==========
-    const persistChecks = (id) => {
-      const stored = JSON.parse(localStorage.getItem('crl-checks') || '{}');
-      document.querySelectorAll('.checklist li').forEach((li, i) => {
-        const key = `${id}-${i}`;
-        if (stored[key]) li.classList.add('done');
-        li.addEventListener('click', () => {
-          li.classList.toggle('done');
-          stored[key] = li.classList.contains('done');
-          localStorage.setItem('crl-checks', JSON.stringify(stored));
-        });
-      });
-    };
-    persistChecks('checks');
-
-    // ========== COPY buttons ==========
-    document.querySelectorAll('.code-copy').forEach(btn => {
-      btn.addEventListener('click', async (e) => {
+    // ========= YT LINK PLACEHOLDER =========
+    const yt = document.getElementById('yt-link');
+    if (yt) {
+      yt.addEventListener('click', (e) => {
         e.preventDefault();
-        const code = btn.parentElement.innerText.replace(/^COPY\n?/, '').trim();
-        try {
-          await navigator.clipboard.writeText(code);
-          btn.textContent = 'COPIADO';
-          btn.classList.add('copied');
-          setTimeout(() => {
-            btn.textContent = 'COPY';
-            btn.classList.remove('copied');
-          }, 1800);
-        } catch (err) {
-          btn.textContent = 'ERROR';
-        }
+        alert('Vídeo en producción — pronto disponible.');
       });
-    });
+    }
 
-    // ========== YOUTUBE LINK placeholder ==========
-    document.getElementById('yt-link').addEventListener('click', (e) => {
-      e.preventDefault();
-      alert('Vídeo en producción — pronto disponible.');
-    });
-
-    // ========== CORE (núcleo de puntos cerebral) ==========
+    // ========= CORE CANVAS (puntos cerebro pulsando) =========
     const canvas = document.getElementById('core-canvas');
     const ctx = canvas.getContext('2d');
     let W, H, dots = [];
-    const NUM = 144;
-    const ACCENT = '#FE2E00';
+    const NUM = 110;
 
     function resize() {
       const r = canvas.getBoundingClientRect();
       const dpr = window.devicePixelRatio || 1;
       canvas.width = r.width * dpr;
       canvas.height = r.height * dpr;
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.scale(dpr, dpr);
       W = r.width; H = r.height;
     }
-    window.addEventListener('resize', resize);
-    resize();
 
-    // Distribución pseudo-cerebral: dos lóbulos
     function initDots() {
       dots = [];
       for (let i = 0; i < NUM; i++) {
         const angle = Math.random() * Math.PI * 2;
         const radiusBase = Math.random() * 0.42 + 0.08;
         const side = Math.random() > 0.5 ? 1 : -1;
-        const cx = W/2 + side * W * 0.12;
-        const cy = H/2;
+        const cx = W / 2 + side * W * 0.12;
+        const cy = H / 2;
         const x = cx + Math.cos(angle) * radiusBase * W * 0.42;
         const y = cy + Math.sin(angle) * radiusBase * H * 0.42;
         dots.push({
-          x, y,
-          baseX: x, baseY: y,
-          r: Math.random() * 1.4 + 0.6,
+          x, y, baseX: x, baseY: y,
+          r: Math.random() * 1.3 + 0.5,
           phase: Math.random() * Math.PI * 2,
           speed: Math.random() * 0.7 + 0.4,
         });
       }
     }
-    initDots();
-    window.addEventListener('resize', initDots);
+
+    resize(); initDots();
+    window.addEventListener('resize', () => { resize(); initDots(); });
 
     let t = 0;
     function tick() {
-      t += 0.012;
+      t += 0.01;
       ctx.clearRect(0, 0, W, H);
-
-      // Líneas sutiles entre puntos cercanos
       ctx.strokeStyle = 'rgba(254,46,0,0.06)';
       ctx.lineWidth = 1;
       for (let i = 0; i < dots.length; i++) {
-        for (let j = i+1; j < dots.length; j++) {
+        for (let j = i + 1; j < dots.length; j++) {
           const dx = dots[i].x - dots[j].x;
           const dy = dots[i].y - dots[j].y;
           const d = Math.sqrt(dx*dx + dy*dy);
-          if (d < 70) {
+          if (d < 75) {
             ctx.beginPath();
             ctx.moveTo(dots[i].x, dots[i].y);
             ctx.lineTo(dots[j].x, dots[j].y);
@@ -1334,22 +1072,17 @@ Trigger: Meeting recorded (con transcript)</pre>
           }
         }
       }
-
-      // Puntos respirando
       dots.forEach(d => {
         const pulse = (Math.sin(t * d.speed + d.phase) + 1) * 0.5;
         const r = d.r * (0.7 + pulse * 0.7);
-        const alpha = 0.3 + pulse * 0.6;
-
+        const alpha = 0.25 + pulse * 0.55;
         d.x = d.baseX + Math.sin(t * 0.4 + d.phase) * 2;
         d.y = d.baseY + Math.cos(t * 0.35 + d.phase) * 2;
-
         ctx.beginPath();
         ctx.arc(d.x, d.y, r, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(254,46,0,${alpha})`;
         ctx.fill();
       });
-
       requestAnimationFrame(tick);
     }
     tick();

@@ -6,13 +6,21 @@ Recibe webhooks de Fathom, analiza la transcripción con Claude según el tipo d
 
 Además, cada 30 días genera automáticamente un **doc maestro mensual** con el resumen agregado de las 3 categorías: métricas, patrones, wins, alertas y recomendaciones.
 
+Como fallback al webhook de Fathom (que a veces no dispara), el sistema hace **polling cada minuto** a la API de Fathom y procesa cualquier llamada nueva que aún no haya sido analizada. **Sistema a prueba de fallos.**
+
 ---
 
-## 📖 Manual de instalación
+## 📖 Manual de instalación paso a paso
+
+**👉 [Manual oficial en Google Docs](https://docs.google.com/document/d/1xAswdq_xt8FRm42nVG7nfI3HSG1-EDG6/edit)**
+
+Guía paso a paso, ≈ 90 minutos. Sin saber programar.
+
+## 🎬 Cómo funciona el sistema (visual)
 
 **👉 [autosetter-cerebro.pages.dev](https://autosetter-cerebro.pages.dev)**
 
-Guía paso a paso, ≈ 90 minutos. Sin saber programar.
+Showcase con scroll horizontal cinematográfico explicando los 2 flujos.
 
 ---
 
@@ -25,7 +33,7 @@ Guía paso a paso, ≈ 90 minutos. Sin saber programar.
 | **Claude (Anthropic)** | Detecta el tipo (Haiku) + análisis profundo (Sonnet) |
 | **Google Drive + Docs API** | Crea los Docs vía HTML conversion |
 | **Telegram Bot** | Avisa con resumen + link al Doc |
-| **APScheduler** | Cron del doc maestro cada 30 días |
+| **APScheduler** | Cron del doc maestro + polling Fathom cada minuto |
 | **Railway** | Hosting del backend |
 
 ---
@@ -52,7 +60,7 @@ python3 scripts/get_refresh_token.py
 # (subir las variables del .env como env vars en Railway)
 ```
 
-**Pero en serio, sigue el manual entero la primera vez. Te ahorra todos los gotchas que ya están resueltos.**
+**Pero en serio, sigue el [manual](https://docs.google.com/document/d/1xAswdq_xt8FRm42nVG7nfI3HSG1-EDG6/edit) la primera vez. Te ahorra todos los gotchas que ya están resueltos.**
 
 ---
 
@@ -60,10 +68,12 @@ python3 scripts/get_refresh_token.py
 
 ```
 .
-├── main.py                       # Backend Flask completo
+├── main.py                       # Backend Flask + polling + dedup
 ├── requirements.txt              # Dependencias Python
 ├── Procfile                      # Comando de arranque en Railway
 ├── .env.example                  # Variables de entorno necesarias
+├── site/
+│   └── index.html                # Showcase visual del sistema
 └── scripts/
     └── get_refresh_token.py      # One-shot OAuth para Google Drive
 ```
