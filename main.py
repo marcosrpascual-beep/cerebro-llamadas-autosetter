@@ -45,6 +45,7 @@ FOLDER_CLIENTES  = os.environ.get("FOLDER_CLIENTES")
 FOLDER_EQUIPO    = os.environ.get("FOLDER_EQUIPO")
 FOLDER_MAESTROS  = os.environ.get("FOLDER_MAESTROS")  # carpeta del Doc maestro mensual
 CRON_TOKEN       = os.environ.get("CRON_TOKEN")       # protege el endpoint /cron/maestro
+FATHOM_API_KEY   = os.environ.get("FATHOM_API_KEY")   # para el polling de fallback
 
 claude = Anthropic(api_key=ANTHROPIC_API_KEY)
 app = Flask(__name__)
@@ -813,6 +814,23 @@ def procesar_webhook(data):
     titulo = "Sin título"
     share_url = ""
     try:
+        # === DEDUPLICACION (webhook vs polling) ===
+        # Si esta llamada ya esta en el cache (la cogio el polling o un webhook
+        # anterior), no la procesamos de nuevo. Marcamos AHORA, no al final.
+        recording_id = data.get("recording_id")
+        if recording_id is not None:
+            with _processed_ids_lock:
+                global _processed_ids_cache
+                if _processed_ids_cache is None:
+                    # Inicializar cache leyendo .json de Drive (primera vez).
+                    pass  # se inicializa fuera del lock abajo
+            if _processed_ids_cache is None:
+                _get_processed_ids()
+            with _processed_ids_lock:
+                if str(recording_id) in _processed_ids_cache:
+                    print(f"⏭️  Recording {recording_id} ya procesada, saltando duplicado.")
+                    return
+                _processed_ids_cache.add(str(recording_id))
 
         titulo        = data.get("title") or data.get("meeting_title") or "Sin título"
         share_url     = data.get("share_url", "")
@@ -965,12 +983,191 @@ def home():
 
 
 # ============================================================
-# ⏰ Scheduler: chequea cada dia si toca generar el maestro
+# 🔄 POLLING FATHOM (fallback al webhook que a veces no dispara)
+# ============================================================
+FATHOM_API_BASE = "https://api.fathom.ai/external/v1"
+
+
+def fathom_list_recent_meetings(limit=20):
+    """Lista las ultimas N llamadas del usuario via API externa de Fathom."""
+    if not FATHOM_API_KEY:
+        return []
+    try:
+        r = requests.get(
+            f"{FATHOM_API_BASE}/meetings",
+            headers={"X-Api-Key": FATHOM_API_KEY},
+            params={"limit": limit, "include_transcript": "true", "include_summary": "true"},
+            timeout=15,
+        )
+        if r.status_code != 200:
+            print(f"⚠️ Fathom list meetings HTTP {r.status_code}: {r.text[:200]}")
+            return []
+        data = r.json()
+        return data.get("items") or data.get("data") or data.get("meetings") or []
+    except Exception as e:
+        print(f"⚠️ Fathom list meetings error: {e}")
+        return []
+
+
+def _recording_id_de(meeting):
+    """Extrae el recording_id sin importar el shape exacto."""
+    return (
+        meeting.get("recording_id")
+        or meeting.get("id")
+        or (meeting.get("recording") or {}).get("id")
+    )
+
+
+_processed_ids_cache = None
+_processed_ids_lock = threading.Lock()
+
+
+def _get_processed_ids(force_refresh=False):
+    """Set de recording_ids ya procesados, leyendo .json hermanos de las 3 carpetas.
+    Cacheado en memoria, se refresca cuando procesamos algo nuevo o si force_refresh.
+    """
+    global _processed_ids_cache
+    with _processed_ids_lock:
+        if _processed_ids_cache is not None and not force_refresh:
+            return _processed_ids_cache
+        ids = set()
+        _, drive_service = get_google_services()
+        if not drive_service:
+            _processed_ids_cache = ids
+            return ids
+        for folder_id in (FOLDER_VENTAS, FOLDER_CLIENTES, FOLDER_EQUIPO):
+            if not folder_id:
+                continue
+            try:
+                # Mira solo .json de los ultimos 7 dias para no leer todo el historico.
+                desde = (datetime.now(timezone.utc) - timedelta(days=7)).isoformat().replace("+00:00", "Z")
+                q = (
+                    f"'{folder_id}' in parents and trashed=false "
+                    f"and mimeType='application/json' and createdTime > '{desde}'"
+                )
+                results = drive_service.files().list(
+                    q=q, fields="files(id, name)", pageSize=100,
+                    supportsAllDrives=True,
+                ).execute()
+                for f in results.get("files", []):
+                    try:
+                        req = drive_service.files().get_media(fileId=f["id"], supportsAllDrives=True)
+                        buf = io.BytesIO()
+                        downloader = MediaIoBaseDownload(buf, req)
+                        done = False
+                        while not done:
+                            _, done = downloader.next_chunk()
+                        data = json.loads(buf.getvalue().decode("utf-8"))
+                        rid = data.get("recording_id") or data.get("analisis", {}).get("recording_id")
+                        if rid is not None:
+                            ids.add(str(rid))
+                    except Exception:
+                        pass
+            except Exception as e:
+                print(f"⚠️ No pude listar .json de {folder_id}: {e}")
+        _processed_ids_cache = ids
+        return ids
+
+
+def _mark_processed(recording_id):
+    """Añade un recording_id al cache."""
+    with _processed_ids_lock:
+        if _processed_ids_cache is not None and recording_id is not None:
+            _processed_ids_cache.add(str(recording_id))
+
+
+def _meeting_a_webhook_payload(meeting):
+    """Transforma un meeting de la API externa al shape que espera procesar_webhook()."""
+    transcript = meeting.get("transcript") or meeting.get("transcript_plaintext_segments") or []
+    # Si transcript viene como string, lo envolvemos
+    if isinstance(transcript, str):
+        transcript = [{"speaker": {"display_name": "?"}, "text": transcript, "timestamp": "00:00"}]
+    return {
+        "title": meeting.get("title") or meeting.get("meeting_title") or "Sin título",
+        "meeting_title": meeting.get("meeting_title") or meeting.get("title") or "Sin título",
+        "share_url": meeting.get("share_url") or meeting.get("url") or "",
+        "url": meeting.get("url") or meeting.get("share_url") or "",
+        "recording_id": _recording_id_de(meeting),
+        "recorded_by": meeting.get("recorded_by") or {},
+        "calendar_invitees": meeting.get("calendar_invitees") or meeting.get("invitees") or [],
+        "default_summary": meeting.get("default_summary") or meeting.get("summary") or {},
+        "transcript": transcript,
+        "transcript_language": meeting.get("transcript_language") or "es",
+    }
+
+
+def _meeting_es_reciente(meeting, horas=6):
+    """True si la llamada empezó hace menos de N horas. Defensivo: si no hay
+    fecha parseable, devuelve False (no procesar — mejor perder un webhook
+    raro que spammear el historico)."""
+    candidatos = (
+        meeting.get("recording_start_time")
+        or meeting.get("started_at")
+        or meeting.get("created_at")
+        or (meeting.get("recording") or {}).get("started_at")
+    )
+    if not candidatos:
+        return False
+    try:
+        # ISO 8601 (con o sin Z)
+        dt = datetime.fromisoformat(str(candidatos).replace("Z", "+00:00"))
+        return (datetime.now(timezone.utc) - dt) < timedelta(hours=horas)
+    except Exception:
+        return False
+
+
+def polling_fathom():
+    """Cada minuto: lista meetings recientes y procesa los que aun no han pasado.
+    Solo procesa llamadas de las ultimas 6h para no spammear el historico al
+    arrancar (deploys nuevos, reinicios, etc)."""
+    if not FATHOM_API_KEY:
+        return
+    try:
+        meetings = fathom_list_recent_meetings(limit=20)
+        if not meetings:
+            return
+        ya_procesados = _get_processed_ids()
+        nuevos = []
+        for m in meetings:
+            rid = _recording_id_de(m)
+            if rid is None:
+                continue
+            if str(rid) in ya_procesados:
+                continue
+            # No procesar si no tiene transcript todavia (Fathom aún procesando).
+            if not (m.get("transcript") or m.get("transcript_plaintext_segments")):
+                continue
+            # No procesar llamadas viejas (>6h) para no spammear historico.
+            if not _meeting_es_reciente(m, horas=6):
+                continue
+            nuevos.append(m)
+
+        if not nuevos:
+            return
+        print(f"🔄 Polling Fathom: {len(nuevos)} llamada(s) nueva(s) detectada(s) — procesando...")
+        for m in nuevos:
+            rid = _recording_id_de(m)
+            try:
+                payload = _meeting_a_webhook_payload(m)
+                # Marcar antes de procesar para evitar dobles disparos (idempotencia best-effort).
+                _mark_processed(rid)
+                # procesar_webhook ya lanza thread y guarda .json hermano al final.
+                procesar_webhook(payload)
+            except Exception as e:
+                print(f"⚠️ Polling: fallo procesando recording {rid}: {e}")
+    except Exception as e:
+        print(f"❌ Error en polling_fathom: {e}")
+
+
+# ============================================================
+# ⏰ Scheduler: maestro diario + polling Fathom cada minuto
 # ============================================================
 _scheduler = BackgroundScheduler(daemon=True, timezone="Europe/Madrid")
 _scheduler.add_job(maestro_si_toca, "cron", hour=9, minute=0, id="maestro_daily")
+_scheduler.add_job(polling_fathom, "interval", minutes=1, id="fathom_polling",
+                   max_instances=1, coalesce=True)
 _scheduler.start()
-print("⏰ Scheduler arrancado · maestro_si_toca cada dia a las 09:00 Madrid")
+print("⏰ Scheduler arrancado · maestro_si_toca diario 09:00 + polling_fathom cada 1min")
 
 
 if __name__ == "__main__":
