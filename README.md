@@ -12,7 +12,7 @@ Como fallback al webhook de Fathom (que a veces no dispara), el sistema hace **p
 
 ## 📖 Manual de instalación paso a paso
 
-**👉 [Manual oficial en Google Docs](https://docs.google.com/document/d/1xAswdq_xt8FRm42nVG7nfI3HSG1-EDG6/edit)**
+**👉 [Manual oficial en Google Docs](https://docs.google.com/document/d/1kbaPxCu42TptBEFdrf2MjUVpQaV5p87f/edit)**
 
 Guía paso a paso, ≈ 90 minutos. Sin saber programar.
 
@@ -54,7 +54,7 @@ python3 scripts/get_refresh_token.py
 # (subir las variables del .env como env vars en Railway)
 ```
 
-**Pero en serio, sigue el [manual](https://docs.google.com/document/d/1xAswdq_xt8FRm42nVG7nfI3HSG1-EDG6/edit) la primera vez. Te ahorra todos los gotchas que ya están resueltos.**
+**Pero en serio, sigue el [manual](https://docs.google.com/document/d/1kbaPxCu42TptBEFdrf2MjUVpQaV5p87f/edit) la primera vez. Te ahorra todos los gotchas que ya están resueltos.**
 
 ---
 
