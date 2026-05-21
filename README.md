@@ -16,12 +16,6 @@ Como fallback al webhook de Fathom (que a veces no dispara), el sistema hace **p
 
 Guía paso a paso, ≈ 90 minutos. Sin saber programar.
 
-## 🎬 Cómo funciona el sistema (visual)
-
-**👉 [autosetter-cerebro.pages.dev](https://autosetter-cerebro.pages.dev)**
-
-Showcase con scroll horizontal cinematográfico explicando los 2 flujos.
-
 ---
 
 ## ⚡ Stack
