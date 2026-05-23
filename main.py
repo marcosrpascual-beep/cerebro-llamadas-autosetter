@@ -122,7 +122,7 @@ Analiza esta transcripción de llamada de VENTA y responde SOLO con JSON válido
 
 {
   "tipo": "VENTA",
-  "cliente": "nombre o empresa del prospecto",
+  "cliente": "SOLO el nombre de la persona del prospecto (ej: 'Amanda', 'Carlos Méndez'). Sin empresa, sin paréntesis, sin apellidos si no los menciona. Si no se identifica nombre, pon 'Sin identificar'.",
   "closer": "nombre del vendedor",
   "cerrado": true o false,
   "importe": "cantidad con moneda o null",
