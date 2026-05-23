@@ -213,19 +213,42 @@ MODEL_ANALISIS = "claude-sonnet-4-6"
 
 
 def analizar_con_claude(transcripcion, tipo_prompt, model=None):
+    """Llama a Claude y parsea su JSON. Con 1 reintento si viene roto."""
     model = model or MODEL_ANALISIS
-    try:
-        respuesta = claude.messages.create(
-            model=model,
-            max_tokens=3000,
-            messages=[{"role": "user", "content": tipo_prompt + transcripcion}]
-        )
-        texto = respuesta.content[0].text.strip()
-        texto = texto.replace("```json", "").replace("```", "").strip()
-        return json.loads(texto)
-    except Exception as e:
-        print(f"❌ Error Claude ({model}): {e}")
-        return None
+    for intento in (1, 2):
+        try:
+            respuesta = claude.messages.create(
+                model=model,
+                max_tokens=8000,
+                messages=[{"role": "user", "content": tipo_prompt + transcripcion}]
+            )
+            texto = respuesta.content[0].text.strip()
+            texto = texto.replace("```json", "").replace("```", "").strip()
+            # Intento parseo directo
+            try:
+                return json.loads(texto)
+            except json.JSONDecodeError as je:
+                # Recortar a {...} mas externo por si Claude antepuso/anadió texto
+                primer = texto.find("{")
+                ultimo = texto.rfind("}")
+                if primer != -1 and ultimo > primer:
+                    try:
+                        return json.loads(texto[primer:ultimo + 1])
+                    except json.JSONDecodeError:
+                        pass
+                if intento == 1:
+                    print(f"⚠️ Claude ({model}) JSON malformado, reintentando: {je}")
+                    continue
+                print(f"❌ Claude ({model}) JSON inválido tras 2 intentos: {je}")
+                print(f"   primer 500 chars de la respuesta: {texto[:500]}")
+                return None
+        except Exception as e:
+            if intento == 1:
+                print(f"⚠️ Claude ({model}) error, reintentando: {e}")
+                continue
+            print(f"❌ Error Claude ({model}) tras 2 intentos: {e}")
+            return None
+    return None
 
 
 # ============================================================
@@ -989,24 +1012,47 @@ FATHOM_API_BASE = "https://api.fathom.ai/external/v1"
 
 
 def fathom_list_recent_meetings(limit=20):
-    """Lista las ultimas N llamadas del usuario via API externa de Fathom."""
+    """Lista las ultimas N llamadas del usuario via API externa de Fathom.
+    Con retries + backoff exponencial para resistir caídas/timeouts puntuales.
+    """
     if not FATHOM_API_KEY:
         return []
-    try:
-        r = requests.get(
-            f"{FATHOM_API_BASE}/meetings",
-            headers={"X-Api-Key": FATHOM_API_KEY},
-            params={"limit": limit, "include_transcript": "true", "include_summary": "true"},
-            timeout=15,
-        )
-        if r.status_code != 200:
-            print(f"⚠️ Fathom list meetings HTTP {r.status_code}: {r.text[:200]}")
-            return []
-        data = r.json()
-        return data.get("items") or data.get("data") or data.get("meetings") or []
-    except Exception as e:
-        print(f"⚠️ Fathom list meetings error: {e}")
-        return []
+    import time as _t
+    delays = [0, 2, 5, 10]  # 4 intentos: inmediato, +2s, +5s, +10s
+    last_err = None
+    for intento, espera in enumerate(delays, 1):
+        if espera:
+            _t.sleep(espera)
+        try:
+            r = requests.get(
+                f"{FATHOM_API_BASE}/meetings",
+                headers={"X-Api-Key": FATHOM_API_KEY},
+                params={"limit": limit, "include_transcript": "true", "include_summary": "true"},
+                timeout=30,
+            )
+            if r.status_code == 200:
+                data = r.json()
+                if intento > 1:
+                    print(f"✅ Fathom OK al intento {intento}/{len(delays)}")
+                return data.get("items") or data.get("data") or data.get("meetings") or []
+            # 5xx → reintentamos; 4xx → fallo permanente
+            if 500 <= r.status_code < 600:
+                last_err = f"HTTP {r.status_code}"
+                print(f"⚠️ Fathom {r.status_code} (intento {intento}/{len(delays)}), reintentando...")
+                continue
+            else:
+                print(f"⚠️ Fathom HTTP {r.status_code}: {r.text[:200]}")
+                return []
+        except requests.exceptions.Timeout:
+            last_err = "timeout"
+            print(f"⚠️ Fathom timeout (intento {intento}/{len(delays)}), reintentando...")
+            continue
+        except Exception as e:
+            last_err = str(e)[:120]
+            print(f"⚠️ Fathom error (intento {intento}/{len(delays)}): {last_err}")
+            continue
+    print(f"❌ Fathom no respondio tras {len(delays)} intentos. Ultimo error: {last_err}")
+    return []
 
 
 def _recording_id_de(meeting):
@@ -1149,9 +1195,9 @@ def polling_fathom():
             rid = _recording_id_de(m)
             try:
                 payload = _meeting_a_webhook_payload(m)
-                # Marcar antes de procesar para evitar dobles disparos (idempotencia best-effort).
-                _mark_processed(rid)
-                # procesar_webhook ya lanza thread y guarda .json hermano al final.
+                # NO marcamos aqui — procesar_webhook hace el dedup atomicamente
+                # al inicio (chequea + marca dentro del mismo lock). Si marcamos
+                # antes, procesar_webhook ve el ID en cache y aborta por dedup.
                 procesar_webhook(payload)
             except Exception as e:
                 print(f"⚠️ Polling: fallo procesando recording {rid}: {e}")
