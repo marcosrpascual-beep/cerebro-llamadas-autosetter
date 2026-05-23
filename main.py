@@ -44,6 +44,7 @@ FOLDER_VENTAS    = os.environ.get("FOLDER_VENTAS")
 FOLDER_CLIENTES  = os.environ.get("FOLDER_CLIENTES")
 FOLDER_EQUIPO    = os.environ.get("FOLDER_EQUIPO")
 FOLDER_MAESTROS  = os.environ.get("FOLDER_MAESTROS")  # carpeta del Doc maestro mensual
+FOLDER_DATOS     = os.environ.get("FOLDER_DATOS")     # carpeta oculta para los .json hermanos
 CRON_TOKEN       = os.environ.get("CRON_TOKEN")       # protege el endpoint /cron/maestro
 FATHOM_API_KEY   = os.environ.get("FATHOM_API_KEY")   # para el polling de fallback
 
@@ -535,10 +536,15 @@ def build_html_cliente(analisis, numero, fecha_str, share_url=""):
 # ============================================================
 
 def guardar_analisis_json(titulo_doc, analisis, folder_id, share_url, tipo, numero):
-    """Guarda el JSON del analisis como archivo hermano del Doc en la misma carpeta.
-    Se usara despues para generar el doc maestro mensual sin re-parsear los Docs.
-    Invisible para el cliente — los .json no aparecen en Google Docs UI normal.
+    """Guarda el JSON del analisis en la carpeta oculta FOLDER_DATOS (no en la
+    carpeta del Doc) para mantener limpias las 3 carpetas principales del
+    cliente. Usado luego por el doc maestro mensual.
+    `folder_id` (carpeta original del Doc) se ignora — solo lo mantenemos en
+    la firma por compatibilidad y se guarda en el JSON para trazabilidad.
     """
+    if not FOLDER_DATOS:
+        print("⚠️ FOLDER_DATOS no configurado — no se guarda JSON. El maestro no podrá agregar.")
+        return
     _, drive_service = get_google_services()
     if not drive_service:
         return
@@ -548,6 +554,7 @@ def guardar_analisis_json(titulo_doc, analisis, folder_id, share_url, tipo, nume
             "numero": numero,
             "titulo_doc": titulo_doc,
             "share_url": share_url,
+            "folder_origen": folder_id,
             "created_at": datetime.now(timezone.utc).isoformat(),
             "analisis": analisis,
         }
@@ -560,24 +567,33 @@ def guardar_analisis_json(titulo_doc, analisis, folder_id, share_url, tipo, nume
             body={
                 "name": f"{titulo_doc}.json",
                 "mimeType": "application/json",
-                "parents": [folder_id],
+                "parents": [FOLDER_DATOS],
             },
             media_body=media,
             fields="id",
             supportsAllDrives=True,
         ).execute()
     except Exception as e:
-        print(f"⚠️ No se pudo guardar JSON hermano: {e}")
+        print(f"⚠️ No se pudo guardar JSON oculto: {e}")
 
 
-def leer_analisis_de_carpeta(folder_id, desde_dt):
-    """Lee todos los .json de la carpeta creados a partir de desde_dt."""
+def leer_analisis_de_carpeta(folder_id, desde_dt, tipo_filter=None):
+    """Lee todos los .json (creados desde desde_dt) de la carpeta FOLDER_DATOS,
+    filtrando opcionalmente por tipo (VENTA/CLIENTE/EQUIPO).
+
+    El parametro folder_id se mantiene por compatibilidad pero ahora todos los
+    JSON estan en FOLDER_DATOS (carpeta oculta). El filtrado por tipo se hace
+    leyendo el campo "tipo" o "folder_origen" del JSON.
+    """
     _, drive_service = get_google_services()
     if not drive_service:
         return []
+    target_folder = FOLDER_DATOS or folder_id  # fallback al folder_id viejo si no hay FOLDER_DATOS
+    if not target_folder:
+        return []
     desde_iso = desde_dt.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
     q = (
-        f"'{folder_id}' in parents and trashed=false "
+        f"'{target_folder}' in parents and trashed=false "
         f"and mimeType='application/json' and createdTime > '{desde_iso}'"
     )
     try:
@@ -589,8 +605,15 @@ def leer_analisis_de_carpeta(folder_id, desde_dt):
             supportsAllDrives=True,
         ).execute()
     except Exception as e:
-        print(f"⚠️ No pude listar JSONs de carpeta {folder_id}: {e}")
+        print(f"⚠️ No pude listar JSONs de carpeta {target_folder}: {e}")
         return []
+
+    # Si llamaron con folder_id especifico, inferimos el tipo para filtrar.
+    # Mapeo: folder_id → tipo del JSON
+    if tipo_filter is None and folder_id:
+        if folder_id == FOLDER_VENTAS:    tipo_filter = "VENTA"
+        elif folder_id == FOLDER_CLIENTES: tipo_filter = "CLIENTE"
+        elif folder_id == FOLDER_EQUIPO:   tipo_filter = "EQUIPO"
 
     out = []
     for f in results.get("files", []):
@@ -602,6 +625,8 @@ def leer_analisis_de_carpeta(folder_id, desde_dt):
             while not done:
                 _, done = downloader.next_chunk()
             data = json.loads(buf.getvalue().decode("utf-8"))
+            if tipo_filter and data.get("tipo") != tipo_filter:
+                continue
             out.append(data)
         except Exception as e:
             print(f"⚠️ No pude leer {f['name']}: {e}")
