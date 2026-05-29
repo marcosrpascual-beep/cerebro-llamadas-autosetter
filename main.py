@@ -1030,6 +1030,27 @@ def home():
     return "🧠 Cerebro de Llamadas v4 activo - by AUTOSETTER™"
 
 
+@app.route("/debug/creds", methods=["GET"])
+def debug_creds():
+    def mask(v):
+        if not v:
+            return "MISSING"
+        return v[:6] + "..." + v[-4:] + f" (len={len(v)})"
+    import requests as _req
+    r = _req.post("https://oauth2.googleapis.com/token", data={
+        "client_id": GOOGLE_OAUTH_CLIENT_ID or "",
+        "client_secret": GOOGLE_OAUTH_CLIENT_SECRET or "",
+        "refresh_token": GOOGLE_OAUTH_REFRESH_TOKEN or "",
+        "grant_type": "refresh_token",
+    })
+    return jsonify({
+        "client_id": mask(GOOGLE_OAUTH_CLIENT_ID),
+        "client_secret": mask(GOOGLE_OAUTH_CLIENT_SECRET),
+        "refresh_token": mask(GOOGLE_OAUTH_REFRESH_TOKEN),
+        "token_test": r.json(),
+    })
+
+
 # ============================================================
 # 🔄 POLLING FATHOM (fallback al webhook que a veces no dispara)
 # ============================================================
