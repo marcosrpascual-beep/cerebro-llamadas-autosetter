@@ -34,9 +34,9 @@ GOOGLE_SERVICE_ACCOUNT_JSON = (
 )
 # OAuth de usuario (preferido sobre Service Account porque los SA en cuentas
 # Gmail personales tienen 0 GB de cuota y no pueden crear archivos en Drive).
-GOOGLE_OAUTH_CLIENT_ID = os.environ.get("GOOGLE_OAUTH_CLIENT_ID")
-GOOGLE_OAUTH_CLIENT_SECRET = os.environ.get("GOOGLE_OAUTH_CLIENT_SECRET")
-GOOGLE_OAUTH_REFRESH_TOKEN = os.environ.get("GOOGLE_OAUTH_REFRESH_TOKEN")
+GOOGLE_OAUTH_CLIENT_ID = (os.environ.get("GOOGLE_OAUTH_CLIENT_ID") or "").strip()
+GOOGLE_OAUTH_CLIENT_SECRET = (os.environ.get("GOOGLE_OAUTH_CLIENT_SECRET") or "").strip()
+GOOGLE_OAUTH_REFRESH_TOKEN = (os.environ.get("GOOGLE_OAUTH_REFRESH_TOKEN") or "").strip()
 
 # IDs de carpetas de Google Drive (las creas tú y pasas los IDs como env vars
 # en Railway — ver .env.example y el paso 06 del manual).
