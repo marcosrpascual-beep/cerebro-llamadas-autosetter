@@ -1,5 +1,5 @@
 """
-🧠 CEREBRO DE LLAMADAS v4 - by Nico Acero / AUTOSETTER™
+🧠 CEREBRO DE LLAMADAS v4 - by DDM
 - Recibe webhooks de Fathom
 - Analiza con Claude según tipo (VENTA / CLIENTE / EQUIPO)
 - Crea Google Doc detallado en la carpeta correcta
@@ -353,7 +353,7 @@ def _html_wrap(titulo, secciones_html, share_url):
 
 <h1 style="font-size: 18pt; margin-bottom: 4px;">{_esc(titulo)}</h1>
 <p style="color: #666; font-size: 11pt; margin-top: 0;">
-🧠 Cerebro de Llamadas · AUTOSETTER™<br>{fathom_line}
+🧠 Cerebro de Llamadas · DDM<br>{fathom_line}
 </p>
 <hr>
 
@@ -361,7 +361,7 @@ def _html_wrap(titulo, secciones_html, share_url):
 
 <hr>
 <p style="color: #999; font-size: 10pt; text-align: center;">
-🧠 Generado automáticamente por Cerebro de Llamadas · AUTOSETTER™
+🧠 Generado automáticamente por Cerebro de Llamadas · DDM
 </p>
 
 </body>
@@ -733,7 +733,7 @@ def build_html_maestro(titulo, fecha_desde, fecha_hasta, ventas_data, clientes_d
 
 <h1 style="font-size: 20pt; margin-bottom: 4px;">{_esc(titulo)}</h1>
 <p style="color: #666; font-size: 11pt; margin-top: 0;">
-🧠 Cerebro de Llamadas · AUTOSETTER™<br>
+🧠 Cerebro de Llamadas · DDM<br>
 📅 Periodo: {_esc(fecha_desde)} → {_esc(fecha_hasta)}<br>
 📊 Total: {ventas_n + clientes_n + equipo_n} llamadas analizadas
 </p>
@@ -747,7 +747,7 @@ def build_html_maestro(titulo, fecha_desde, fecha_hasta, ventas_data, clientes_d
 
 <hr>
 <p style="color: #999; font-size: 10pt; text-align: center;">
-🧠 Generado automáticamente por Cerebro de Llamadas · AUTOSETTER™
+🧠 Generado automáticamente por Cerebro de Llamadas · DDM
 </p>
 
 </body>
@@ -1027,7 +1027,7 @@ def cron_maestro():
 # ============================================================
 @app.route("/", methods=["GET"])
 def home():
-    return "🧠 Cerebro de Llamadas v4 activo - by AUTOSETTER™"
+    return "🧠 Cerebro de Llamadas v4 activo - by DDM"
 
 
 @app.route("/debug/creds", methods=["GET"])
