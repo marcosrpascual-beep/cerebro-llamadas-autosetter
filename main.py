@@ -322,13 +322,18 @@ def _split_puntuacion(raw):
     return raw.strip(), ""
 
 
+_BORDO = "#7B1A2D"
+
 def _kv_table(rows):
     inner = "\n".join(
-        f"<tr><td><b>{_esc(k)}</b></td><td>&nbsp;&nbsp;{_esc(v)}</td></tr>"
+        f'<tr>'
+        f'<td style="font-weight:600; color:{_BORDO}; padding:7px 20px 7px 0; white-space:nowrap; vertical-align:top;">{_esc(k)}</td>'
+        f'<td style="padding:7px 0; vertical-align:top;">{_esc(v)}</td>'
+        f'</tr>'
         for k, v in rows
     )
     return (
-        '<table cellpadding="4" style="border-collapse: collapse;">\n'
+        '<table style="border-collapse:collapse; margin:10px 0 16px 0;">\n'
         + inner + "\n</table>"
     )
 
@@ -337,32 +342,43 @@ def _ul(items, check=False):
     if not items:
         return ""
     prefix = "☐ " if check else ""
-    inner = "\n".join(f"<li>{prefix}{_esc(i)}</li>" for i in items)
-    return f"<ul>\n{inner}\n</ul>"
+    inner = "\n".join(
+        f'<li style="margin-bottom:8px; line-height:1.5;">{prefix}{_esc(i)}</li>'
+        for i in items
+    )
+    return f'<ul style="margin:10px 0 16px 0; padding-left:22px;">\n{inner}\n</ul>'
 
 
 def _html_wrap(titulo, secciones_html, share_url):
     fathom_line = (
-        f'\n🎥 <a href="{_esc(share_url)}">Grabación en Fathom</a>'
+        f'&nbsp;·&nbsp;🎥 <a href="{_esc(share_url)}" style="color:{_BORDO};">Grabación en Fathom</a>'
         if share_url else ""
     )
     return f"""<!DOCTYPE html>
 <html>
-<head><meta charset="utf-8"></head>
-<body style="font-family: 'Helvetica', 'Inter', sans-serif; font-size: 12pt; color: #222;">
+<head>
+<meta charset="utf-8">
+<style>
+  body {{ font-family: 'Helvetica Neue', 'Helvetica', Arial, sans-serif; font-size: 12pt; color: #222; line-height: 1.55; max-width: 820px; margin: 0 auto; padding: 28px 32px; }}
+  h1 {{ font-size: 19pt; color: #111; margin: 0 0 6px 0; }}
+  h2 {{ font-size: 13pt; color: {_BORDO}; border-bottom: 2px solid {_BORDO}; padding-bottom: 5px; margin: 32px 0 14px 0; }}
+  h3 {{ font-size: 11.5pt; color: #333; margin: 18px 0 8px 0; }}
+  p {{ margin: 6px 0 10px 0; line-height: 1.55; }}
+  blockquote {{ border-left: 4px solid {_BORDO}; padding: 8px 16px; color: #555; margin: 12px 0 16px 0; background: #fdf6f7; border-radius: 0 4px 4px 0; }}
+  hr {{ border: none; border-top: 1px solid #e0e0e0; margin: 24px 0; }}
+  .meta {{ color: #666; font-size: 10.5pt; margin: 4px 0 20px 0; }}
+  .footer {{ color: #aaa; font-size: 9.5pt; text-align: center; margin-top: 36px; padding-top: 12px; border-top: 1px solid #eee; }}
+</style>
+</head>
+<body>
 
-<h1 style="font-size: 18pt; margin-bottom: 4px;">{_esc(titulo)}</h1>
-<p style="color: #666; font-size: 11pt; margin-top: 0;">
-🧠 Cerebro de Llamadas · DDM<br>{fathom_line}
-</p>
+<h1>{_esc(titulo)}</h1>
+<p class="meta">🧠 Cerebro de Llamadas · DDM{fathom_line}</p>
 <hr>
 
 {secciones_html}
 
-<hr>
-<p style="color: #999; font-size: 10pt; text-align: center;">
-🧠 Generado automáticamente por Cerebro de Llamadas · DDM
-</p>
+<div class="footer">🧠 Generado automáticamente por Cerebro de Llamadas · DDM</div>
 
 </body>
 </html>"""
@@ -402,27 +418,30 @@ def build_html_venta(analisis, numero, fecha_str, share_url=""):
     for i, o in enumerate(analisis.get("objeciones", []), 1):
         val = o.get("valoracion", "?")
         obj_parts.extend([
-            f"<h3>Objeción {i}</h3>",
-            f'<p><b>Qué dijo:</b> "{_esc(o.get("objecion", "?"))}"</p>',
-            f"<p><b>Cómo se respondió:</b> {_esc(o.get('como_se_manejo', '?'))}</p>",
-            f"<p><b>Valoración:</b> {_val_emoji(val)} {_esc(val)}</p>",
+            f'<div style="margin:16px 0 20px 0; padding:14px 16px; background:#fafafa; border-left:3px solid #ddd; border-radius:0 4px 4px 0;">',
+            f"<h3 style='margin:0 0 10px 0;'>Objeción {i}</h3>",
+            f'<p style="margin:4px 0;"><b>Qué dijo:</b> &ldquo;{_esc(o.get("objecion", "?"))}&rdquo;</p>',
+            f"<p style='margin:4px 0;'><b>Cómo se respondió:</b> {_esc(o.get('como_se_manejo', '?'))}</p>",
+            f"<p style='margin:4px 0;'><b>Valoración:</b> {_val_emoji(val)} {_esc(val)}</p>",
+            "</div>",
         ])
     sec.append("\n".join(obj_parts))
 
     mej_parts = ["<h2>🎯 Mejoras detalladas</h2>"]
     for i, m in enumerate(analisis.get("mejoras_detalladas", []), 1):
         mej_parts.extend([
-            f"<h3>Momento {i} · {_esc(m.get('momento', '?'))}</h3>",
-            f"<p><b>Qué pasó:</b> {_esc(m.get('que_paso', '?'))}</p>",
-            f"<p><b>Cómo debería ser:</b> {_esc(m.get('como_deberia_ser', '?'))}</p>",
+            f'<div style="margin:16px 0 20px 0; padding:14px 16px; background:#fafafa; border-left:3px solid {_BORDO}; border-radius:0 4px 4px 0;">',
+            f"<h3 style='margin:0 0 10px 0; color:{_BORDO};'>Momento {i} · {_esc(m.get('momento', '?'))}</h3>",
+            f"<p style='margin:4px 0;'><b>Qué pasó:</b> {_esc(m.get('que_paso', '?'))}</p>",
+            f"<p style='margin:6px 0 0 0;'><b>Cómo debería ser:</b> {_esc(m.get('como_deberia_ser', '?'))}</p>",
+            "</div>",
         ])
     sec.append("\n".join(mej_parts))
 
     if analisis.get("frases_clave"):
-        frases_parts = ["<h2>💬 Frases clave del cliente</h2>", "<blockquote>"]
+        frases_parts = ["<h2>💬 Frases clave del cliente</h2>"]
         for f in analisis.get("frases_clave", []):
-            frases_parts.append(f'<p>"{_esc(f)}"</p>')
-        frases_parts.append("</blockquote>")
+            frases_parts.append(f'<blockquote>&ldquo;{_esc(f)}&rdquo;</blockquote>')
         sec.append("\n".join(frases_parts))
 
     sec.append(
@@ -458,10 +477,12 @@ def build_html_equipo(analisis, numero, fecha_str, share_url=""):
     for i, t in enumerate(tareas, 1):
         prio = t.get("prioridad", "?")
         tareas_parts.extend([
-            f"<h3>Tarea {i} · {_esc(t.get('tarea', '?'))}</h3>",
-            f"<p><b>Responsable:</b> {_esc(t.get('responsable', '?'))}</p>",
-            f"<p><b>Deadline:</b> {_esc(t.get('deadline', 'sin fecha'))}</p>",
-            f"<p><b>Prioridad:</b> {_prio_emoji(prio)} {_esc(prio)}</p>",
+            f'<div style="margin:14px 0 18px 0; padding:12px 16px; background:#fafafa; border-left:3px solid #ddd; border-radius:0 4px 4px 0;">',
+            f"<h3 style='margin:0 0 10px 0;'>Tarea {i} · {_esc(t.get('tarea', '?'))}</h3>",
+            f"<p style='margin:3px 0;'><b>Responsable:</b> {_esc(t.get('responsable', '?'))}</p>",
+            f"<p style='margin:3px 0;'><b>Deadline:</b> {_esc(t.get('deadline', 'sin fecha'))}</p>",
+            f"<p style='margin:3px 0;'><b>Prioridad:</b> {_prio_emoji(prio)} {_esc(prio)}</p>",
+            "</div>",
         ])
     sec.append("\n".join(tareas_parts))
 
@@ -504,10 +525,12 @@ def build_html_cliente(analisis, numero, fecha_str, share_url=""):
     comp_parts = ["<h2>🤝 Compromisos adquiridos</h2>"]
     for i, c in enumerate(analisis.get("compromisos_adquiridos", []), 1):
         comp_parts.extend([
-            f"<h3>Compromiso {i}</h3>",
-            f"<p><b>Qué:</b> {_esc(c.get('compromiso', '?'))}</p>",
-            f"<p><b>Responsable:</b> {_esc(c.get('responsable', '?'))}</p>",
-            f"<p><b>Deadline:</b> {_esc(c.get('deadline', '?'))}</p>",
+            f'<div style="margin:14px 0 18px 0; padding:12px 16px; background:#fafafa; border-left:3px solid {_BORDO}; border-radius:0 4px 4px 0;">',
+            f"<h3 style='margin:0 0 10px 0;'>Compromiso {i}</h3>",
+            f"<p style='margin:3px 0;'><b>Qué:</b> {_esc(c.get('compromiso', '?'))}</p>",
+            f"<p style='margin:3px 0;'><b>Responsable:</b> {_esc(c.get('responsable', '?'))}</p>",
+            f"<p style='margin:3px 0;'><b>Deadline:</b> {_esc(c.get('deadline', '?'))}</p>",
+            "</div>",
         ])
     sec.append("\n".join(comp_parts))
 
@@ -515,10 +538,12 @@ def build_html_cliente(analisis, numero, fecha_str, share_url=""):
     for i, t in enumerate(analisis.get("tareas", []), 1):
         prio = t.get("prioridad", "?")
         tareas_parts.extend([
-            f"<h3>Tarea {i} · {_esc(t.get('tarea', '?'))}</h3>",
-            f"<p><b>Responsable:</b> {_esc(t.get('responsable', '?'))}</p>",
-            f"<p><b>Deadline:</b> {_esc(t.get('deadline', 'sin fecha'))}</p>",
-            f"<p><b>Prioridad:</b> {_prio_emoji(prio)} {_esc(prio)}</p>",
+            f'<div style="margin:14px 0 18px 0; padding:12px 16px; background:#fafafa; border-left:3px solid #ddd; border-radius:0 4px 4px 0;">',
+            f"<h3 style='margin:0 0 10px 0;'>Tarea {i} · {_esc(t.get('tarea', '?'))}</h3>",
+            f"<p style='margin:3px 0;'><b>Responsable:</b> {_esc(t.get('responsable', '?'))}</p>",
+            f"<p style='margin:3px 0;'><b>Deadline:</b> {_esc(t.get('deadline', 'sin fecha'))}</p>",
+            f"<p style='margin:3px 0;'><b>Prioridad:</b> {_prio_emoji(prio)} {_esc(prio)}</p>",
+            "</div>",
         ])
     sec.append("\n".join(tareas_parts))
 
